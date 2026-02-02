@@ -1,4 +1,4 @@
-# dev_environment
+# Developer setup
 
 Personal development environment configurations for macOS. This repository contains my dotfiles and settings for various development tools.
 
@@ -37,3 +37,9 @@ Personal development environment configurations for macOS. This repository conta
 - **Git Integration**: Lazy git alias and git-aware prompts
 - **Python Development**: IPython debugger configured as default breakpoint
 - **Persistent Sessions**: Tmux sessions automatically saved and restored
+
+## References
+- [Zsh setup](https://www.josean.com/posts/terminal-setup)
+- [Wezterm setup](https://www.josean.com/posts/how-to-setup-wezterm-terminal)
+- [Tmux setup](https://www.josean.com/posts/tmux-setup)
+- [Useful CLI tools](https://www.josean.com/posts/7-amazing-cli-tools)
