@@ -1,0 +1,108 @@
+# Plan: Convert Cursor Skills to Claude Code Skills & Agents
+
+## Context
+The user has 7 skill definitions in `.cursor/skills/` (Cursor editor format). They want these transferred to Claude Code's user-scope `~/.claude/` directory. Each skill should be classified as either a **skill** (contextual guidance in conversation) or a **sub-agent** (autonomous sub-process). Playwright is excluded (already available).
+
+## Classification Rationale
+
+| Cursor Skill | → Claude Code | Why |
+|---|---|---|
+| **code-cleaner** | Agent | Autonomous iterative task — runs ruff/ty, fixes issues in a loop, returns summary. No user interaction needed during execution. |
+| **code-onboarder** | Agent | Autonomous exploration + generation — explores repo, produces `system-architecture.md`. Self-contained output. |
+| **docstring-numpy** | Agent | Autonomous batch conversion — iterates files, converts docstrings, returns summary. |
+| **gh-fix-ci** | Agent | Autonomous investigation — inspects failing checks via `gh` CLI, analyzes logs, reports findings. Has a helper Python script. |
+| **pr-description** | Skill | Interactive workflow — needs user context (branch, audience, PR type). Produces output inline in conversation. |
+| **visual-explainer** | Skill | Creative guidance with templates/references — needs to stay in conversation for aesthetic choices and iteration. Complex supporting files. |
+| **obsidian-cli** | Skill | Pure reference material — command syntax guide that augments conversation context when Obsidian work is happening. |
+
+## Changes
+
+### 1. Create agents (`~/.claude/agents/`)
+
+#### `~/.claude/agents/code-cleaner.md`
+- Source: `.cursor/skills/code-cleaner/SKILL.md`
+- Add agent frontmatter: `name`, `description` (with trigger examples), `model: sonnet`
+- Convert SKILL.md body into agent system prompt (role + process + output format)
+
+#### `~/.claude/agents/code-onboarder.md`
+- Source: `.cursor/skills/code-onboarder/SKILL.md`
+- Add agent frontmatter with trigger examples for "onboard", "architecture doc", "explain codebase"
+- Body becomes system prompt for autonomous repo exploration
+
+#### `~/.claude/agents/docstring-numpy.md`
+- Source: `.cursor/skills/docstring-numpy/SKILL.md`
+- Add agent frontmatter with trigger examples for "convert docstrings", "numpy style"
+- Body becomes system prompt for batch docstring conversion
+
+#### `~/.claude/agents/gh-fix-ci.md`
+- Source: `.cursor/skills/gh-fix-ci/SKILL.md`
+- Add agent frontmatter with trigger examples for "fix CI", "failing checks", "PR checks"
+- Body becomes system prompt; reference the bundled script
+- Also copy: `.cursor/skills/gh-fix-ci/scripts/inspect_pr_checks.py` → `~/.claude/agents/scripts/inspect_pr_checks.py`
+
+### 2. Create skills (`~/.claude/skills/`)
+
+#### `~/.claude/skills/pr-description/SKILL.md`
+- Source: `.cursor/skills/pr-description/SKILL.md`
+- Add Claude Code skill frontmatter: `name`, `description`
+- Keep body as-is (workflow instructions)
+
+#### `~/.claude/skills/visual-explainer/SKILL.md`
+- Source: `.cursor/skills/visual-explainer/SKILL.md`
+- Add Claude Code skill frontmatter: `name`, `description`
+- Copy supporting directories:
+  - `.cursor/skills/visual-explainer/references/` → `~/.claude/skills/visual-explainer/references/`
+  - `.cursor/skills/visual-explainer/templates/` → `~/.claude/skills/visual-explainer/templates/`
+
+#### `~/.claude/skills/obsidian-cli/SKILL.md`
+- Source: `.cursor/skills/obsidian-cli/SKILL.md`
+- Add Claude Code skill frontmatter: `name`, `description`
+- Keep body as-is (reference documentation)
+
+### Agent frontmatter format
+```yaml
+---
+name: agent-name
+description: |
+  Use this agent when...
+
+  <example>
+  Context: ...
+  user: "..."
+  assistant: "..."
+  <commentary>...</commentary>
+  </example>
+model: sonnet
+---
+```
+
+### Skill frontmatter format
+```yaml
+---
+name: skill-name
+description: Use when the user asks to "...", "...", or needs "..."
+---
+```
+
+## Files to create
+- `~/.claude/agents/code-cleaner.md`
+- `~/.claude/agents/code-onboarder.md`
+- `~/.claude/agents/docstring-numpy.md`
+- `~/.claude/agents/gh-fix-ci.md`
+- `~/.claude/agents/scripts/inspect_pr_checks.py` (copied from source)
+- `~/.claude/skills/pr-description/SKILL.md`
+- `~/.claude/skills/visual-explainer/SKILL.md`
+- `~/.claude/skills/visual-explainer/references/css-patterns.md` (copied)
+- `~/.claude/skills/visual-explainer/references/libraries.md` (copied)
+- `~/.claude/skills/visual-explainer/references/responsive-nav.md` (copied)
+- `~/.claude/skills/visual-explainer/references/slide-patterns.md` (copied)
+- `~/.claude/skills/visual-explainer/templates/architecture.html` (copied)
+- `~/.claude/skills/visual-explainer/templates/data-table.html` (copied)
+- `~/.claude/skills/visual-explainer/templates/mermaid-flowchart.html` (copied)
+- `~/.claude/skills/visual-explainer/templates/slide-deck.html` (copied)
+- `~/.claude/skills/obsidian-cli/SKILL.md`
+
+## Verification
+- `ls -R ~/.claude/agents/ ~/.claude/skills/` to confirm file structure
+- Read back each agent/skill file to verify frontmatter and content
+- Start a new Claude Code session and confirm skills appear in the available skills list

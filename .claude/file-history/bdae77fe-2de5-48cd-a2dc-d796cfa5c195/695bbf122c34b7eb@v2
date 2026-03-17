@@ -1,0 +1,225 @@
+# Edit Summary — Avoid Misgovernance in Corporates
+
+This document summarises all proofreading and editorial changes made to the manuscript after splitting it into individual chapter files. Changes are organised by Section, Part, and Chapter.
+
+**Editorial guidelines applied:**
+- Indian English conventions (organisation, programme, honour, etc.)
+- Spelling, grammar, punctuation, subject-verb agreement, tense consistency
+- Preserved author's voice, anecdotes, domain terms, and personal style
+- No content added or removed — only existing text improved
+
+---
+
+## Frontmatter
+
+### 01_introduction.md (lines 345–348)
+| Location | Type | Original | Edited | Reason |
+|----------|------|----------|--------|--------|
+| Para 1 | Grammar | "interest to read" | "interest in reading" | Correct preposition usage |
+| Para 1 | Punctuation | "With all honesty I say" | "With all honesty, I say" | Missing comma |
+| Para 1 | Grammar | "leaders of future" | "leaders of the future" | Missing article |
+| Para 1 | Punctuation | "DGM) , General Managers" | "DGM), General Managers" | Extraneous space |
+| Para 1 | Punctuation | "(CXOs) , Presidents" | "(CXOs), Presidents" | Extraneous space |
+| Para 2 | Agreement | "chapters of the book discusses on" | "chapters of the book discuss" | Plural subject; unnecessary "on" |
+
+### 02_preface.md (lines 351–393)
+| Location | Type | Original | Edited | Reason |
+|----------|------|----------|--------|--------|
+| Multiple | Spelling | "organization" (7×) | "organisation" | Indian English |
+| Multiple | Spelling | "analyzed", "recognizing" | "analysed", "recognising" | Indian English |
+| Para 1 | Grammar | "may not be always appropriate" | "may not always be appropriate" | Adverb placement |
+| Para 4 | Spelling | "demine" | "demean" | Misspelling |
+| Para 5 | Grammar | "problems aroused" | "problems that arose" | Wrong word |
+| Para 5 | Agreement | "construction projects encompasses" | "construction projects encompass" | Plural subject |
+| Para 6 | Grammar | "draw your attention on" | "draw your attention to" | Preposition |
+| Para 8 | Agreement | "Annexures...illustrates" | "Annexures...illustrate" | Plural subject |
+| Para 8 | Grammar | "personal advices" | "personal advice" | Uncountable noun |
+| Notes | Punctuation | "her's" | "hers" | No apostrophe in possessive pronoun |
+
+### 03_about_the_author.md (lines 395–405)
+| Location | Type | Original | Edited | Reason |
+|----------|------|----------|--------|--------|
+| Para 1 | Grammar | "which also a premier" | "which is also a premier" | Missing verb |
+| Para 2 | Grammar | "hanged my boots" | "hung my boots" | Incorrect past tense |
+| Para 3 | Grammar | "After a eight year stint" | "After an eight-year stint" | Article; hyphenation |
+
+### 04_acknowledgement.md (lines 407–415)
+| Location | Type | Original | Edited | Reason |
+|----------|------|----------|--------|--------|
+| Para 2 | Agreement | "have encouraged" | "has encouraged" | Singular subject "Sagar" |
+| Para 2 | Grammar | "this give shape" | "gave shape" | Wrong tense |
+| Para 3 | Grammar | "inquisitive to learn on how" | "inquisitive to learn how" | Unnecessary preposition |
+
+### 05_disclaimer.md (lines 417–423)
+| Location | Type | Original | Edited | Reason |
+|----------|------|----------|--------|--------|
+| Para 1 | Agreement | "and is not meant" | "and are not meant" | Plural subject "issues" |
+| Para 1 | Spelling | "demine" | "demean" | Misspelling |
+| Para 3 | Spelling | "first hand" | "firsthand" | Single word |
+
+---
+
+## Section 1 — Leadership
+
+### Part 1: CXO/SBU/BU/Department Head Level Leadership
+
+**00_intro.md** — Fixed "comprises of" → "comprises", subject-verb agreements, "layouts" → "lays out", pronoun consistency.
+
+**01_the_too_many_cxo_syndrome.md** — Fixed "Overheads increases" → "increase", "contradicting to" → "contradictory to", "lesser number" → "fewer", "very less" → "very low".
+
+**02_the_renowned_guy_syndrome.md** — Fixed "not the expertise" → "not an expert", "swayed away on" → "swayed by", preposition corrections.
+
+**03_the_oil_chain_syndrome.md** — Fixed "refrain himself" → "refrain", "disturbs" → "disturb" (agreement), "underserving" → "undeserving".
+
+**04_the_lethargic_and_reactive_syndrome.md** — Fixed missing articles ("a lot of"), subject-verb agreements, tense consistency.
+
+**05_the_shooting_below_syndrome.md** — Fixed "demining" → "demeaning", "incidences" → "incidents", spurious apostrophe.
+
+**06_the_passing_incompetence_syndrome.md** — Fixed missing articles, "need to discuss" → "need to be discussed".
+
+**07_the_past_performance_syndrome.md** — Fixed "interested of" → "interested in", "adopt to" → "adapt to", spurious apostrophe in "learning's".
+
+**08_the_ego_syndrome.md** — Fixed "Contacts Head" → "Contracts Head" (typo), "capable to gauge" → "capable of gauging", "leader have" → "leader has".
+
+**09_the_blue_eyed_blind_eyed_syndrome.md** — Fixed prepositions, spurious apostrophes, "underserving" → "undeserving", duplicate "be".
+
+**10_the_all_day_vc_syndrome.md** — Fixed "meetings saves" → "meetings save", compound subject agreements.
+
+**11_the_no_emergency_syndrome.md** — Fixed "Time and Tide waits" → "wait", "precious advises" → "precious advice".
+
+**12_the_no_risk_syndrome.md** — Fixed "avert to" → "averse to", "very less" → "very low" (4×), "needs to analysed" → "needs to be analysed".
+
+**13_the_foolish_target_syndrome.md** — Fixed "characters" → "characteristics", removed redundant "as to".
+
+**14_the_secret_relation_syndrome.md** — Fixed spurious apostrophe, pronoun agreements, subject-verb agreements.
+
+**15_the_posh_syndrome.md** — Fixed "field of sphere" → "sphere", "talent are" → "talent is".
+
+**16_the_false_innovation_syndrome.md** — Fixed pronoun agreements, tense consistency, phrasing improvements.
+
+**17_the_miscommunication_syndrome.md** — Fixed "preview to" → "privy to" (2×), "lays" → "lies", "grape vines" → "grapevines".
+
+**18_the_misuse_syndrome.md** — Fixed "exchequer" → "expenditure", "quiet sometime" → "quite some time".
+
+**19–24** — Various subject-verb agreements, spelling corrections, phrasing improvements.
+
+**99_good_practices.md** — Fixed missing articles, "Birthday wishes brings" → "bring".
+
+---
+
+## Section 2 — People
+
+### Part 2: People, the Employees
+
+**00_intro.md** — Fixed "comprise of" → "comprise", "it's size" → "its size" (possessive), "organization" → "organisation" throughout, subject-verb agreements.
+
+**01_the_triple_s_character.md** — Fixed "seniors who matters" → "matter", "character less" → "characterless", "behaviors" → "behaviours".
+
+**02_the_incapable_managers_on_top.md** — Fixed "demine" → "demean", "very less" → "very little", missing articles.
+
+**03_departmental_heads_at_low_positions.md** — Fixed pronoun consistency, double spaces.
+
+**04_time_mismanagement.md** — Fixed "Almighty have" → "has", "Priotorise" → "Prioritise", "pritorising" → "prioritising".
+
+**05_stressed_envioronment.md** — Fixed "rude behavior" → "behaviour", "pressurizing" → "pressurising", "deers" → "deer", "'Right to Disconnect' law" correction.
+
+**06_the_apcs_menace.md** — Fixed "organize" → "organise" (4×), "bananas are riped" → "ripened", "vindicated" → "victimised", correlative conjunctions.
+
+**07_growing_by_age_not_by_knowledge.md** — Fixed "semesters" → "seminars", "Many a times" → "Many a time", "Some time or later" → "Sooner or later".
+
+**08_image_nisation.md** — Fixed "bad names it" → "badmouth it", "administered courage" → "mustered courage", "program" → "programme".
+
+**09_no_heed_to_cost_and_quality.md** — Fixed "program" → "programme" (5×), preposition corrections, tense consistency.
+
+**10_the_unethical_money.md** — Fixed "Vigilant Department" → "Vigilance Department", "victimized" → "victimised".
+
+**11_disrespect_and_ungratefulness.md** — Fixed "saved a catastrophic fire" → "averted", "money do bring" → "does bring", "World cup" → "World Cup".
+
+**99_good_practices.md** — Fixed pronoun consistency, "programs" → "programmes", "organization" → "organisation".
+
+---
+
+## Section 3 — Operations
+
+### Parts 3–5: Strategy, Marketing, Advertising
+
+**Part 3** — Fixed "comprises of" → "comprises" (multiple), "organization" → "organisation" throughout, "utilizing" → "utilising", missing commas after conjunctive adverbs, "comprising of" → "comprising" (5×), subject-verb agreements.
+
+**Part 4** — Fixed "too less" → "too few" (countable nouns), "irreverent" → "irrelevant" (4×), "innumerous" → "innumerable", "meager" → "meagre", subject-verb agreements, preposition corrections.
+
+**Part 5** — Fixed "ADVERTISNG" → "ADVERTISING", "portraits" → "portray", subject-verb agreements, missing articles.
+
+### Parts 6–9: Designs, Bidding, Project Management, Site Operations
+
+**Part 6** — Fixed "recue profits" → "reduce profits", "over emphasized" → "overemphasised", "conscience" → "commitment" (context), "optimized" → "optimised".
+
+**Part 7** — Fixed "hunting an eating" → "and", "atleast" → "at least", "facilitated" → "felicitated" (2×), "fianance" → "finance", "wind the bid" → "wins", "scrupulous" → "unscrupulous", "A Bid do not" → "does not", "a engineer" → "an engineer", "scrutiny the bid" → "scrutinise the bid".
+
+**Part 8** — Fixed "stationary" → "stationery", "Store's manager" → "Stores manager", "If unused erroneously" → "If used erroneously", "takes over the contact" → "contract", "judicial decision" → "judicious decision", "comprise of" → "comprise".
+
+**Part 9** — Fixed "vindicated" → "victimised", "stealing stationary" → "stationery", "organization lose" → "loses", "kilometer" → "kilometre", preposition corrections.
+
+### Parts 10–15: Production, Supply Chain, Fleet, Stores, Quality, Safety
+
+**Part 10** — Fixed "comprises of" → "comprises", "galavnisation" → "galvanisation", "these structured" → "structures", "organization" → "organisation", "minimized" → "minimised".
+
+**Part 11** — Fixed "comprises of" → "comprises", "conductor" → "contractor" (typo), "lease priced" → "least priced", "An a example" → "As an example", "stategise" → "strategise", "organistaions" → "organisations".
+
+**Part 12** — Fixed "alongwith" → "along with", "health check up" → "check-ups", "optimizing" → "optimising", subject-verb agreements.
+
+**Part 13** — Fixed "photo and video graphed" → "photographed and videographed", "harards" → "hazards", agreement corrections.
+
+**Part 14** — Fixed "make consume" → "may consume", "prioritize" → "prioritise", embedded URLs removed, subject-verb agreements.
+
+**Part 15** — Fixed "make consume" → "may consume", "plastering of painting" → "or", "lapse in quality" → "lapse in safety" (wrong domain, 4×), "harards" → "hazards", embedded URLs removed.
+
+---
+
+## Section 4 — Support Services
+
+### Parts 16–20: HR, Administration, Contracts, Finance, Audit
+
+**Part 16** — Fixed "griviences" → "grievances", "organistaion" → "organisation", "percenatges" → "percentages", "judicial" → "judicious", "Lata Mangeswar" → "Lata Mangeshkar", "playin" → "playing", "distress people" → "de-stress people".
+
+**Part 17** — Fixed "vindicated" → "victimised", "stationary" → "stationery", "kilometer" → "kilometre", "do not know to handle" → "do not know how to handle".
+
+**Part 18** — Fixed "Contacts" → "Contracts" (typo, 2×), "indifferences" → "differences", "judicially" → "judiciously", subject-verb agreements, parallel construction.
+
+**Part 19** — Fixed "earling" → "earning", "Rs 12 Lkahs" → "Lakhs", "billes" → "bills", "stereo typed" → "stereotyped", article corrections.
+
+**Part 20** — Fixed "There may two" → "There may be two", "Experience auditors" → "Experienced", "Bit major" → "But major", "reasonable competent" → "reasonably competent".
+
+### Parts 21–26: IT, Learning & Development, Insurance, Ethics, ESG, CSR
+
+**Part 21** — Fixed "trevial" → "trivial", "Autocad" → "AutoCAD", "wifi" → "Wi-Fi", "down time" → "downtime", "date with ease" → "data with ease" (typo), "organization" → "organisation", compound modifier hyphenation (high-end, low-end, fast-paced), "enhan-cing" and "indispen-sable" (erroneous hyphenation artefacts removed).
+
+**Part 22** — Fixed "Now a days" → "Nowadays", "non sense" → "nonsense", "device" → "devise", "programs" → "programmes" (3×), "organization" → "organisation" (8×), "fulfillment" → "fulfilment" (2×), "leaders of future" → "leaders of the future", "The salient points of are" → "The salient points are", multiple subject-verb agreements, missing articles and preposition corrections.
+
+**Part 23** — Fixed "organization" → "organisation" (5×), "third party" → "third-party", "bumper to bumper" → "bumper-to-bumper", "The salient points of are" → "The salient points are" (3×), "insurances" → "insurance" (uncountable), subject-verb agreements, missing articles and conjunctions.
+
+**Part 24** — Fixed "mandatory by any all" → "any law" (typo), "organization" → "organisation" (5×), "recognized" → "recognised", "many a times" → "many a time", "irrespective to" → "irrespective of", "compliance to" → "compliance with", "The salient points of are" → "The salient points are".
+
+**Part 25** — Fixed "implementingstricter" → "implementing stricter" (missing space), "up cycling" → "upcycling", "Green washing" → "Greenwashing", "fire crackers" → "firecrackers", "sunning banned fire crackers" → "bursting banned firecrackers", "prioritize" → "prioritise", "meager" → "meagre", "organizations realize" → "organisations realise", "factories o treat" → "to treat" (typo), "The salient points of are" → "The salient points are", multiple subject-verb agreements.
+
+**Part 26** — Fixed "fulfill" → "fulfil", "stationary" → "stationery", "utilized" → "utilised", "authorized" → "authorised", "organization" → "organisation", compound modifier hyphenation (one-time, short-term, long-term), subject-verb agreements, missing articles and punctuation.
+
+---
+
+## Section 5 — Articles
+
+### Parts 27–28: New Concepts, Annexures
+
+**Part 27** — Fixed "discus" → "discuss", "companys's" → "company's", "Non Fianance" → "Non Finance", "acquanted" → "acquainted", "cah flow" → "cash flow", "underatnding" → "understanding", "coopertaion" → "cooperation", "programs" → "programmes", "tou" → "you".
+
+**Part 28** — Fixed "Annexures deals" → "deal", "Detail Project Report" → "Detailed", "black listed" → "blacklisted", "MoU" → "MoM" (Minutes of Meeting), "ANNERXURE" → "ANNEXURE", "PART THERFOF" → "THEREOF", "biding documents" → "bidding", "Vodaphone" → "Vodafone", "good wind" → "good wins", "fulfill" → "fulfil", "it's" → "its" (possessive, 3×), duplicate step numbering fixed.
+
+### Parts 29–30: Personal Advice, My Learning
+
+**Part 29** — Fixed "advices" → "advice" (uncountable), "I due course" → "In due course", "a Advanced" → "an Advanced", "humanly" → "humanely" (2×), "fiancé" → "fiancée", "fulfillment" → "fulfilment", "judicially" → "judiciously", "disrupters" → "disruptors", "live s" → "lives", logic fix ("thus paying" → "thus not paying premiums"), multiple subject-verb agreements.
+
+**Part 30** — Fixed "facilitated" → "felicitated" (3×), "Tears rolled down my years" → "eyes", "work alcoholic" → "workaholic", "floe colleagues" → "floor colleagues", "realizing" → "realising", "recognized" → "recognised", various subject-verb agreements and tense corrections.
+
+---
+
+*Total files proofread: 214*
+*Proofreading completed: 2026-03-16*

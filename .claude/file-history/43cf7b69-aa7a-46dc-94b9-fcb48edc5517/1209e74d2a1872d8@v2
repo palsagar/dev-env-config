@@ -1,0 +1,6 @@
+---
+paths:
+  - "**/*.py"
+---
+
+Ensure signatures of functions and methods have proper type annotations (preferably from the typing and collections.abc modules).

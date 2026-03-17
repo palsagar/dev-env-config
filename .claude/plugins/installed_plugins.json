@@ -1,0 +1,75 @@
+{
+  "version": 2,
+  "plugins": {
+    "frontend-design@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/sagarpal/.claude/plugins/cache/claude-plugins-official/frontend-design/d5c15b861cd2",
+        "version": "d5c15b861cd2",
+        "installedAt": "2026-03-16T21:04:56.347Z",
+        "lastUpdated": "2026-03-16T21:04:56.347Z",
+        "gitCommitSha": "d5c15b861cd23e3102215c26020368ad5134dc47"
+      }
+    ],
+    "superpowers@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/sagarpal/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.2",
+        "version": "5.0.2",
+        "installedAt": "2026-03-16T21:05:27.580Z",
+        "lastUpdated": "2026-03-16T21:05:27.580Z",
+        "gitCommitSha": "363923f74aa9cd7b470c0aaa73dee629a8bfdc90"
+      }
+    ],
+    "playwright@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/sagarpal/.claude/plugins/cache/claude-plugins-official/playwright/d5c15b861cd2",
+        "version": "d5c15b861cd2",
+        "installedAt": "2026-03-16T21:05:47.000Z",
+        "lastUpdated": "2026-03-16T21:05:47.000Z",
+        "gitCommitSha": "d5c15b861cd23e3102215c26020368ad5134dc47"
+      }
+    ],
+    "commit-commands@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/sagarpal/.claude/plugins/cache/claude-plugins-official/commit-commands/d5c15b861cd2",
+        "version": "d5c15b861cd2",
+        "installedAt": "2026-03-16T21:06:06.586Z",
+        "lastUpdated": "2026-03-16T21:06:06.586Z",
+        "gitCommitSha": "d5c15b861cd23e3102215c26020368ad5134dc47"
+      }
+    ],
+    "security-guidance@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/sagarpal/.claude/plugins/cache/claude-plugins-official/security-guidance/d5c15b861cd2",
+        "version": "d5c15b861cd2",
+        "installedAt": "2026-03-16T21:06:19.950Z",
+        "lastUpdated": "2026-03-16T21:06:19.950Z",
+        "gitCommitSha": "d5c15b861cd23e3102215c26020368ad5134dc47"
+      }
+    ],
+    "skill-creator@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/sagarpal/.claude/plugins/cache/claude-plugins-official/skill-creator/d5c15b861cd2",
+        "version": "d5c15b861cd2",
+        "installedAt": "2026-03-16T21:06:42.734Z",
+        "lastUpdated": "2026-03-16T21:06:42.734Z",
+        "gitCommitSha": "d5c15b861cd23e3102215c26020368ad5134dc47"
+      }
+    ],
+    "pyright-lsp@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/sagarpal/.claude/plugins/cache/claude-plugins-official/pyright-lsp/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-03-16T21:06:58.580Z",
+        "lastUpdated": "2026-03-16T21:06:58.580Z",
+        "gitCommitSha": "d5c15b861cd23e3102215c26020368ad5134dc47"
+      }
+    ]
+  }
+}

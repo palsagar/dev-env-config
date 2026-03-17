@@ -1,0 +1,5 @@
+---
+paths:
+  - "**/*.py"
+---
+Add in-line comments alongside or above the lines or blocks of code especially when the logic is non-trivial. Explain the intent (the "what"), and not implementation detail (the "how").

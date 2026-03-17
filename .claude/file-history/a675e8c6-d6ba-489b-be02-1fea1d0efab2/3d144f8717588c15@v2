@@ -1,0 +1,43 @@
+# Avoid Misgovernance in Corporates
+
+**A Practical Guide to Right Governance for the Leaders of Tomorrow**
+
+*By Abhik Pal — Former Executive Vice President & SBU Head, Tata Projects Limited*
+
+---
+
+A candid, experience-driven guide to corporate governance covering the dysfunctions, behavioural patterns, and systemic failures that derail organisations. Written from decades of first-hand observation across leadership, people management, operations, and support functions.
+
+## Read the Book
+
+The latest compiled version is available as **[book.pdf](book.pdf)**.
+
+## Browse the Chapters
+
+Chapters are organised under [`chapters/`](chapters/) by section:
+
+| Section | Directory |
+|---------|-----------|
+| Frontmatter (Introduction, Preface, About the Author) | [`chapters/00_frontmatter/`](chapters/00_frontmatter/) |
+| Section 1 — Leadership | [`chapters/01_leadership/`](chapters/01_leadership/) |
+| Section 2 — People | [`chapters/02_people/`](chapters/02_people/) |
+| Section 3 — Operations | [`chapters/03_operations/`](chapters/03_operations/) |
+| Section 4 — Support Services | [`chapters/04_support_services/`](chapters/04_support_services/) |
+| Section 5 — Articles & Annexures | [`chapters/05_articles/`](chapters/05_articles/) |
+
+The full reading order is in [`chapters/index.md`](chapters/index.md).
+
+## Editorial History
+
+All proofreading and editorial changes applied to the manuscript are logged in [`EDIT_SUMMARY.md`](EDIT_SUMMARY.md), organised by section, part, and chapter.
+
+## Regenerate the PDF
+
+Requires Python 3.10+ and [`uv`](https://docs.astral.sh/uv/).
+
+```sh
+uv sync                       # install dependencies into .venv
+uv run generate_pdf.py        # writes book.pdf
+```
+
+Dependencies (`markdown2`, `weasyprint`) are declared in [`pyproject.toml`](pyproject.toml).

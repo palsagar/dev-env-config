@@ -1,0 +1,6 @@
+---
+globs: **/*.py
+alwaysApply: false
+---
+
+Use `uv` (from Astral) for all Python project and environment management. Create projects with `uv init`, virtual environments with `uv venv`, and add dependencies with `uv add <package>` (never `pip install`). Run scripts and commands through `uv run <command>` to ensure the correct environment is used. Use `uv sync` to install from an existing lockfile. Always manage dependencies via `pyproject.toml` rather than `requirements.txt`.

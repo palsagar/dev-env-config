@@ -1,0 +1,136 @@
+# Plan: Proofread and Edit "Avoid Misgovernance in Corporates"
+
+## Context
+
+The manuscript `original_draft.md` (4,721 lines, ~649KB) is a complete book draft by Abhik Pal about corporate governance. It needs to be:
+1. Split into individual chapter markdown files
+2. Committed at that state
+3. Proofread and edited for spelling, grammar, phrasing, and sentence construction
+4. Accompanied by a summary of all changes
+5. Equipped with a Python markdown-to-PDF converter
+
+## Step 1: Create the splitting script and split the manuscript
+
+Create `split_manuscript.py` that reads `original_draft.md` and produces a `chapters/` directory tree.
+
+**Directory structure** — two-level: section folders containing part folders containing chapter files:
+```
+chapters/
+  00_frontmatter/
+    01_introduction.md
+    02_preface.md
+    03_about_the_author.md
+    04_acknowledgement.md
+    05_disclaimer.md
+  01_leadership/
+    part_01_cxo_leadership/
+      00_intro.md
+      01_too_many_cxo_syndrome.md
+      02_renowned_guy_syndrome.md
+      ...
+      99_good_practices.md
+  02_people/
+    part_02_employees/
+      ...
+  03_operations/
+    part_03_strategy/
+    part_04_marketing/
+    ...
+    part_15_safety/
+  04_support_services/
+    part_16_hr/
+    ...
+    part_26_csr/
+  05_articles/
+    part_27_new_concepts/
+    part_28_annexures/
+    part_29_personal_advice/
+    part_30_my_learning/
+```
+
+**Splitting logic:**
+- Section boundaries: `**SECTION N –` pattern
+- Part boundaries: `**PART N**` (in body, after line ~424)
+- Chapter boundaries: `**CHAPTER :` (109 occurrences) — standard chapters
+- Annexure boundaries: `**ANNEXURE:` — Part 28 items
+- Bold topic headers — Parts 29-30 topics (e.g., `**ATTITUDE**`, `**The Tongue**`)
+- Good practices: `**SOME GOOD PRACTICES**` or `**Some good practices**`
+- Intro text: content between part header and first chapter → `00_intro.md`
+
+Each file gets YAML frontmatter recording original line range:
+```yaml
+---
+title: "The 'Too Many CXO' Syndrome"
+part: 1
+section: 1
+original_lines: "501-570"
+---
+```
+
+Also generate `chapters/index.md` — a manifest listing all files in reading order.
+
+**Estimated output:** ~170 files (6 frontmatter + ~109 chapters + ~15 annexures + ~19 advice topics + ~11 lessons + ~30 intros + ~23 good practices sections).
+
+**Critical file:** `/Users/sagarpal/projects/baba_book/original_draft.md`
+
+## Step 2: Git commit the split state
+
+```bash
+git add chapters/ split_manuscript.py
+git commit -m "Split original_draft.md into individual chapter files"
+```
+
+## Step 3: Proofread and edit all chapters
+
+**Strategy:** Dispatch parallel sub-agents, batched by Part (30 parts + frontmatter).
+
+Each sub-agent receives:
+- All chapter files for its assigned part(s)
+- Editorial guidelines (below)
+- Instructions to edit files in-place AND produce a structured change log
+
+**Parallelism:** 5-7 sub-agents per wave, ~5 waves total. Smaller parts can be grouped (e.g., Parts 10-13 in one agent).
+
+**Editorial guidelines for sub-agents:**
+- Professional, authoritative tone (senior executive addressing management students)
+- **Indian English** conventions (organisation, programme, honour, etc.)
+- **Preserve** the author's voice, anecdotes, and personal style
+- **Fix:** spelling errors, grammar, awkward phrasing, sentence construction, punctuation, subject-verb agreement, tense consistency
+- **Do NOT change:** domain terms (SBU, BU, CXO, DPR, NIT, LoI, NOA, etc.), Indian business terms, currency (Rs, Cr, Lakhs)
+- **Do NOT** add or remove content — only improve existing text
+- Each chapter's "The salient points are:" section should be checked for consistency
+
+**Change log format** — each sub-agent returns a structured list:
+```
+| Location | Type | Original | Edited | Reason |
+```
+
+## Step 4: Create EDIT_SUMMARY.md
+
+Consolidate all change logs from sub-agents into a single `EDIT_SUMMARY.md` organized by Section → Part → Chapter, with references to original line numbers (from YAML frontmatter).
+
+## Step 5: Create `generate_pdf.py`
+
+A Python script using `markdown-it-py` + `weasyprint` (or `markdown2` + `weasyprint`) to:
+1. Read `chapters/index.md` for file ordering
+2. Convert each markdown file to HTML
+3. Apply a book-appropriate CSS stylesheet (A4, serif font, proper margins, page breaks between chapters, page numbers)
+4. Render to a single PDF
+
+Include `pyproject.toml` with `uv`-compatible dependency configuration.
+
+## Step 6: Final commits
+
+```bash
+git add chapters/ EDIT_SUMMARY.md
+git commit -m "Proofread and edit all chapters"
+
+git add generate_pdf.py pyproject.toml
+git commit -m "Add markdown-to-PDF conversion script"
+```
+
+## Verification
+
+1. After split: verify no content lost by comparing concatenated chapters against original
+2. After edits: spot-check several chapters from different sections
+3. PDF script: run `python generate_pdf.py` and verify output renders correctly

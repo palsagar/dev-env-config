@@ -1,0 +1,238 @@
+#!/usr/bin/env python3
+"""Convert chapter markdown files to a single PDF book."""
+
+import re
+import sys
+from pathlib import Path
+
+import markdown2
+from weasyprint import HTML
+
+BOOK_CSS = """
+@page {
+    size: A4;
+    margin: 2.5cm 2cm 2.5cm 2cm;
+    @bottom-center {
+        content: counter(page);
+        font-family: "Georgia", serif;
+        font-size: 10pt;
+        color: #555;
+    }
+}
+
+body {
+    font-family: "Georgia", "Times New Roman", serif;
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #1a1a1a;
+}
+
+h1 {
+    font-size: 22pt;
+    text-align: center;
+    margin-top: 3cm;
+    margin-bottom: 1cm;
+    page-break-before: always;
+    color: #2c3e50;
+}
+
+h1:first-of-type {
+    page-break-before: avoid;
+}
+
+h2 {
+    font-size: 16pt;
+    margin-top: 1.5cm;
+    margin-bottom: 0.5cm;
+    color: #2c3e50;
+    border-bottom: 1px solid #bdc3c7;
+    padding-bottom: 0.2cm;
+}
+
+h3 {
+    font-size: 13pt;
+    margin-top: 1cm;
+    margin-bottom: 0.3cm;
+    color: #34495e;
+}
+
+p {
+    text-align: justify;
+    margin-bottom: 0.4cm;
+    orphans: 3;
+    widows: 3;
+}
+
+ol, ul {
+    margin-bottom: 0.4cm;
+    padding-left: 1.5cm;
+}
+
+li {
+    margin-bottom: 0.2cm;
+}
+
+strong {
+    color: #2c3e50;
+}
+
+blockquote {
+    border-left: 3px solid #bdc3c7;
+    padding-left: 1cm;
+    margin-left: 0;
+    color: #555;
+    font-style: italic;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0.5cm 0;
+    font-size: 10pt;
+}
+
+th, td {
+    border: 1px solid #bdc3c7;
+    padding: 0.2cm 0.4cm;
+    text-align: left;
+}
+
+th {
+    background-color: #ecf0f1;
+    font-weight: bold;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #bdc3c7;
+    margin: 1cm 0;
+}
+
+.title-page {
+    text-align: center;
+    page-break-after: always;
+}
+
+.title-page h1 {
+    font-size: 28pt;
+    margin-top: 6cm;
+    page-break-before: avoid;
+}
+
+.title-page h2 {
+    font-size: 16pt;
+    border: none;
+    color: #555;
+}
+
+.title-page p {
+    text-align: center;
+    font-size: 12pt;
+    color: #555;
+}
+
+.chapter-break {
+    page-break-before: always;
+}
+"""
+
+
+def strip_frontmatter(text):
+    """Remove YAML frontmatter from markdown content."""
+    if text.startswith("---"):
+        end = text.find("---", 3)
+        if end != -1:
+            return text[end + 3:].strip()
+    return text
+
+
+def read_index(chapters_dir):
+    """Read index.md and return ordered list of file paths."""
+    index_path = chapters_dir / "index.md"
+    if not index_path.exists():
+        print(f"Error: {index_path} not found", file=sys.stderr)
+        sys.exit(1)
+
+    files = []
+    with open(index_path) as f:
+        for line in f:
+            m = re.search(r"\[([^\]]+\.md)\]", line)
+            if m:
+                filepath = chapters_dir / m.group(1)
+                if filepath.exists():
+                    files.append(filepath)
+                else:
+                    print(f"Warning: {filepath} not found, skipping", file=sys.stderr)
+    return files
+
+
+def build_title_page():
+    """Generate HTML for the title page."""
+    return """
+    <div class="title-page">
+        <h1>AVOID<br>MISGOVERNANCE IN CORPORATES</h1>
+        <h2>A Practical Guide to Right Governance for the<br>Leaders of Tomorrow</h2>
+        <p>Governance issues as I have seen, heard and understood</p>
+        <br><br>
+        <p><strong>Abhik Pal</strong></p>
+        <p>Former Executive Vice President &amp; SBU Head<br>Tata Projects Limited</p>
+    </div>
+    """
+
+
+def convert_markdown_to_html(md_text):
+    """Convert markdown text to HTML."""
+    return markdown2.markdown(
+        md_text,
+        extras=["tables", "fenced-code-blocks", "break-on-newline"],
+    )
+
+
+def main():
+    chapters_dir = Path(__file__).parent / "chapters"
+    output_path = Path(__file__).parent / "book.pdf"
+
+    if not chapters_dir.exists():
+        print("Error: chapters/ directory not found. Run split_manuscript.py first.",
+              file=sys.stderr)
+        sys.exit(1)
+
+    files = read_index(chapters_dir)
+    print(f"Found {len(files)} chapter files")
+
+    # Build HTML document
+    html_parts = [build_title_page()]
+
+    for i, filepath in enumerate(files):
+        with open(filepath) as f:
+            content = f.read()
+        content = strip_frontmatter(content)
+        if not content.strip():
+            continue
+
+        html = convert_markdown_to_html(content)
+
+        # Add chapter break for all except first
+        if i > 0:
+            html = f'<div class="chapter-break">{html}</div>'
+
+        html_parts.append(html)
+
+    full_html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>{BOOK_CSS}</style>
+</head>
+<body>
+{"".join(html_parts)}
+</body>
+</html>"""
+
+    print("Generating PDF...")
+    HTML(string=full_html).write_pdf(output_path)
+    print(f"PDF written to {output_path}")
+
+
+if __name__ == "__main__":
+    main()

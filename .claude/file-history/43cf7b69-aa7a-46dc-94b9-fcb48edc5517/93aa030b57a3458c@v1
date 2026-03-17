@@ -1,0 +1,45 @@
+# Plan: Integrate Cursor Rules into Claude Code
+
+## Context
+The user has coding rules defined in `.cursor/rules/` (Cursor editor format) and wants them available in Claude Code's user-scope persistent context. The general "karpathy vibes" rule should always apply; the Python-specific rules should only apply when working with Python files.
+
+## Changes
+
+### 1. Create `~/.claude/CLAUDE.md` — general always-on rules
+- Source: `.cursor/rules/general/karpathy_vibes.mdc`
+- Strip the Cursor `.mdc` frontmatter (`alwaysApply: true`) since user-scope `CLAUDE.md` always applies by default
+- Keep the markdown content as-is
+
+### 2. Create `~/.claude/rules/python/` — Python-scoped rules
+Three files, each converted from `.mdc` to `.md` with Claude Code frontmatter:
+
+| Source file | Target file | Change |
+|---|---|---|
+| `.cursor/rules/python/comments.mdc` | `~/.claude/rules/python/comments.md` | Replace `globs`/`alwaysApply` frontmatter with `paths: ["**/*.py"]` |
+| `.cursor/rules/python/docstrings.mdc` | `~/.claude/rules/python/docstrings.md` | Same frontmatter conversion |
+| `.cursor/rules/python/types.mdc` | `~/.claude/rules/python/types.md` | Same frontmatter conversion |
+
+### Format conversion (Cursor → Claude Code)
+```
+# Before (Cursor .mdc):
+---
+globs: **/*.py
+alwaysApply: false
+---
+
+# After (Claude Code .md):
+---
+paths:
+  - "**/*.py"
+---
+```
+
+## Files to create
+- `~/.claude/CLAUDE.md`
+- `~/.claude/rules/python/comments.md`
+- `~/.claude/rules/python/docstrings.md`
+- `~/.claude/rules/python/types.md`
+
+## Verification
+- Confirm files exist with correct content via `ls` and reading them back
+- Start a new Claude Code session and verify rules are loaded (rules without `paths` load at start; path-scoped rules load when matching `.py` files are accessed)

@@ -1,0 +1,1734 @@
+     1→# CSS Patterns for Diagrams
+     2→
+     3→Reusable patterns for layout, connectors, theming, and visual effects in self-contained HTML diagrams.
+     4→
+     5→## Theme Setup
+     6→
+     7→Always define both light and dark palettes via custom properties. Start with whichever fits the chosen aesthetic, ensure both work.
+     8→
+     9→```css
+    10→:root {
+    11→  --font-body: 'Outfit', system-ui, sans-serif;
+    12→  --font-mono: 'Space Mono', 'SF Mono', Consolas, monospace;
+    13→
+    14→  --bg: #f8f9fa;
+    15→  --surface: #ffffff;
+    16→  --surface-elevated: #ffffff;
+    17→  --border: rgba(0, 0, 0, 0.08);
+    18→  --border-bright: rgba(0, 0, 0, 0.15);
+    19→  --text: #1a1a2e;
+    20→  --text-dim: #6b7280;
+    21→  --accent: #0891b2;
+    22→  --accent-dim: rgba(8, 145, 178, 0.1);
+    23→  /* Semantic accents for diagram elements */
+    24→  --node-a: #0891b2;
+    25→  --node-a-dim: rgba(8, 145, 178, 0.1);
+    26→  --node-b: #059669;
+    27→  --node-b-dim: rgba(5, 150, 105, 0.1);
+    28→  --node-c: #d97706;
+    29→  --node-c-dim: rgba(217, 119, 6, 0.1);
+    30→}
+    31→
+    32→@media (prefers-color-scheme: dark) {
+    33→  :root {
+    34→    --bg: #0d1117;
+    35→    --surface: #161b22;
+    36→    --surface-elevated: #1c2333;
+    37→    --border: rgba(255, 255, 255, 0.06);
+    38→    --border-bright: rgba(255, 255, 255, 0.12);
+    39→    --text: #e6edf3;
+    40→    --text-dim: #8b949e;
+    41→    --accent: #22d3ee;
+    42→    --accent-dim: rgba(34, 211, 238, 0.12);
+    43→    --node-a: #22d3ee;
+    44→    --node-a-dim: rgba(34, 211, 238, 0.12);
+    45→    --node-b: #34d399;
+    46→    --node-b-dim: rgba(52, 211, 153, 0.12);
+    47→    --node-c: #fbbf24;
+    48→    --node-c-dim: rgba(251, 191, 36, 0.12);
+    49→  }
+    50→}
+    51→```
+    52→
+    53→## Background Atmosphere
+    54→
+    55→Flat backgrounds feel dead. Use subtle gradients or patterns.
+    56→
+    57→```css
+    58→/* Radial glow behind focal area */
+    59→body {
+    60→  background: var(--bg);
+    61→  background-image: radial-gradient(ellipse at 50% 0%, var(--accent-dim) 0%, transparent 60%);
+    62→}
+    63→
+    64→/* Faint dot grid */
+    65→body {
+    66→  background-color: var(--bg);
+    67→  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+    68→  background-size: 24px 24px;
+    69→}
+    70→
+    71→/* Diagonal subtle lines */
+    72→body {
+    73→  background-color: var(--bg);
+    74→  background-image: repeating-linear-gradient(
+    75→    -45deg, transparent, transparent 40px,
+    76→    var(--border) 40px, var(--border) 41px
+    77→  );
+    78→}
+    79→
+    80→/* Gradient mesh (pick 2-3 positioned radials) */
+    81→body {
+    82→  background: var(--bg);
+    83→  background-image:
+    84→    radial-gradient(at 20% 20%, var(--node-a-dim) 0%, transparent 50%),
+    85→    radial-gradient(at 80% 60%, var(--node-b-dim) 0%, transparent 50%);
+    86→}
+    87→```
+    88→
+    89→## Link Styling
+    90→
+    91→**Never rely on browser default link colors.** The default blue (`#0000EE`) has poor contrast on dark backgrounds. Style links with `color: var(--accent)` and keep underlines for discoverability. On dark backgrounds, use bright accents (`#22d3ee`, `#34d399`, `#fbbf24`). On light backgrounds, use deeper tones (`#0891b2`, `#059669`, `#d97706`).
+    92→
+    93→## Section / Card Components
+    94→
+    95→The fundamental building block. A colored card representing a system component, pipeline step, or data entity.
+    96→
+    97→**IMPORTANT: Never use `.node` as a CSS class name.** Mermaid.js internally uses `.node` on its SVG `<g>` elements with `transform: translate(x, y)` for positioning. Any page-level `.node` styles (hover transforms, box-shadows, transitions) will leak into Mermaid diagrams and break their layout. Use `.ve-card` instead (namespaced to avoid collisions with CSS frameworks like Bootstrap/Tailwind that also use `.card`).
+    98→
+    99→```css
+   100→.ve-card {
+   101→  background: var(--surface);
+   102→  border: 1px solid var(--border);
+   103→  border-radius: 10px;
+   104→  padding: 16px 20px;
+   105→  position: relative;
+   106→}
+   107→
+   108→/* Colored accent border (left or top) */
+   109→.ve-card--accent-a {
+   110→  border-left: 3px solid var(--node-a);
+   111→}
+   112→
+   113→/* --- Depth tiers: vary card depth to signal importance --- */
+   114→
+   115→/* Elevated: KPIs, key sections, anything that should pop */
+   116→.ve-card--elevated {
+   117→  background: var(--surface-elevated);
+   118→  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+   119→}
+   120→
+   121→/* Recessed: code blocks, secondary content, detail panels */
+   122→.ve-card--recessed {
+   123→  background: color-mix(in srgb, var(--bg) 70%, var(--surface) 30%);
+   124→  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+   125→  border-color: var(--border);
+   126→}
+   127→
+   128→/* Hero: executive summaries, focal elements — demands attention */
+   129→.ve-card--hero {
+   130→  background: color-mix(in srgb, var(--surface) 92%, var(--accent) 8%);
+   131→  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+   132→  border-color: color-mix(in srgb, var(--border) 50%, var(--accent) 50%);
+   133→}
+   134→
+   135→/* Glass: special-occasion overlay effect (use sparingly) */
+   136→.ve-card--glass {
+   137→  background: color-mix(in srgb, var(--surface) 60%, transparent 40%);
+   138→  backdrop-filter: blur(12px);
+   139→  -webkit-backdrop-filter: blur(12px);
+   140→  border-color: rgba(255, 255, 255, 0.1);
+   141→}
+   142→
+   143→/* Section label (monospace, uppercase, small) */
+   144→.ve-card__label {
+   145→  font-family: var(--font-mono);
+   146→  font-size: 10px;
+   147→  font-weight: 600;
+   148→  text-transform: uppercase;
+   149→  letter-spacing: 1.5px;
+   150→  color: var(--node-a);
+   151→  margin-bottom: 10px;
+   152→  display: flex;
+   153→  align-items: center;
+   154→  gap: 8px;
+   155→}
+   156→
+   157→/* Colored dot indicator */
+   158→.ve-card__label::before {
+   159→  content: '';
+   160→  width: 8px;
+   161→  height: 8px;
+   162→  border-radius: 50%;
+   163→  background: currentColor;
+   164→}
+   165→```
+   166→
+   167→## Code Blocks
+   168→
+   169→Code blocks need explicit whitespace preservation and a max-height constraint. Without these, code runs together and long files overwhelm the page.
+   170→
+   171→### Basic Pattern
+   172→
+   173→```css
+   174→.code-block {
+   175→  font-family: var(--font-mono);
+   176→  font-size: 13px;
+   177→  line-height: 1.5;
+   178→  background: var(--surface);
+   179→  border: 1px solid var(--border);
+   180→  border-radius: 8px;
+   181→  padding: 16px;
+   182→  overflow-x: auto;
+   183→  /* CRITICAL: preserve line breaks and indentation */
+   184→  white-space: pre-wrap;
+   185→  word-break: break-word;
+   186→}
+   187→
+   188→/* Constrain height for long code */
+   189→.code-block--scroll {
+   190→  max-height: 400px;
+   191→  overflow-y: auto;
+   192→}
+   193→```
+   194→
+   195→```html
+   196→<pre class="code-block code-block--scroll"><code>// Your code here
+   197→function example() {
+   198→  return true;
+   199→}</code></pre>
+   200→```
+   201→
+   202→### With File Header
+   203→
+   204→```css
+   205→.code-file {
+   206→  border: 1px solid var(--border);
+   207→  border-radius: 8px;
+   208→  overflow: hidden;
+   209→}
+   210→
+   211→.code-file__header {
+   212→  display: flex;
+   213→  align-items: center;
+   214→  gap: 8px;
+   215→  padding: 10px 16px;
+   216→  background: var(--surface);
+   217→  border-bottom: 1px solid var(--border);
+   218→  font-family: var(--font-mono);
+   219→  font-size: 12px;
+   220→  color: var(--text-dim);
+   221→}
+   222→
+   223→.code-file__body {
+   224→  font-family: var(--font-mono);
+   225→  font-size: 13px;
+   226→  line-height: 1.5;
+   227→  padding: 16px;
+   228→  background: var(--surface-elevated);
+   229→  white-space: pre-wrap;
+   230→  word-break: break-word;
+   231→  max-height: 500px;
+   232→  overflow: auto;
+   233→}
+   234→```
+   235→
+   236→```html
+   237→<div class="code-file">
+   238→  <div class="code-file__header">
+   239→    <span>src/extension.ts</span>
+   240→  </div>
+   241→  <pre class="code-file__body"><code>export function activate() {
+   242→  // ...
+   243→}</code></pre>
+   244→</div>
+   245→```
+   246→
+   247→### Implementation Plans: Don't Dump Full Files
+   248→
+   249→For implementation plans and architecture docs, **don't display entire source files inline**. Instead:
+   250→
+   251→1. **Show structure, not code:**
+   252→   ```html
+   253→   <div class="file-structure">
+   254→     <div class="file-structure__path">src/extension.ts</div>
+   255→     <ul class="file-structure__outline">
+   256→       <li><code>BOOMERANG_INSTRUCTIONS</code> — System prompt for autonomous mode</li>
+   257→       <li><code>clearState()</code> — Reset extension state</li>
+   258→       <li><code>updateStatus()</code> — Update UI status indicator</li>
+   259→       <li><code>/boomerang</code> command — Start autonomous task</li>
+   260→       <li><code>/boomerang-cancel</code> command — Cancel active task</li>
+   261→       <li><code>before_agent_start</code> hook — Inject instructions</li>
+   262→       <li><code>agent_end</code> hook — Generate summary</li>
+   263→     </ul>
+   264→   </div>
+   265→   ```
+   266→
+   267→2. **Use collapsible sections for full code:**
+   268→   ```html
+   269→   <details class="collapsible">
+   270→     <summary>Full implementation (87 lines)</summary>
+   271→     <pre class="code-file__body"><code>...</code></pre>
+   272→   </details>
+   273→   ```
+   274→
+   275→3. **Show key snippets only:**
+   276→   ```html
+   277→   <p>The core logic intercepts task completion:</p>
+   278→   <pre class="code-block"><code>pi.on("agent_end", async () => {
+   279→     const summary = generateSummary(workEntries);
+   280→     boomerangComplete = true;
+   281→   });</code></pre>
+   282→   ```
+   283→
+   284→**Anti-patterns:**
+   285→- Displaying full source files inline (100+ lines overwhelming the page)
+   286→- Code blocks without `white-space: pre-wrap` (code runs together into unreadable wall)
+   287→- No height constraint on long code (page becomes endless scroll)
+   288→
+   289→If someone needs the full file, put it in a collapsible section or link to it.
+   290→
+   291→## Overflow Protection
+   292→
+   293→Grid and flex children default to `min-width: auto`, which prevents them from shrinking below their content width. Long text, inline code badges, and non-wrapping elements will blow out containers.
+   294→
+   295→### Global rules
+   296→
+   297→```css
+   298→/* Every grid/flex child must be able to shrink */
+   299→.grid > *, .flex > *,
+   300→[style*="display: grid"] > *,
+   301→[style*="display: flex"] > * {
+   302→  min-width: 0;
+   303→}
+   304→
+   305→/* Long text wraps instead of overflowing */
+   306→body {
+   307→  overflow-wrap: break-word;
+   308→}
+   309→```
+   310→
+   311→### Side-by-side comparison panels
+   312→
+   313→```css
+   314→.comparison {
+   315→  display: grid;
+   316→  grid-template-columns: 1fr 1fr;
+   317→  gap: 16px;
+   318→}
+   319→
+   320→.comparison > * {
+   321→  min-width: 0;
+   322→  overflow-wrap: break-word;
+   323→}
+   324→
+   325→@media (max-width: 768px) {
+   326→  .comparison { grid-template-columns: 1fr; }
+   327→}
+   328→```
+   329→
+   330→### Never use `display: flex` on `<li>` for marker characters
+   331→
+   332→Using `display: flex` on a list item to position a `::before` marker creates an anonymous flex item for the remaining text content. That anonymous flex item gets `min-width: auto` and you **cannot** set `min-width: 0` on anonymous boxes. Lines with many inline `<code>` badges will overflow their container with no CSS fix possible.
+   333→
+   334→Use absolute positioning for markers instead:
+   335→
+   336→```css
+   337→/* WRONG — causes overflow with inline code badges */
+   338→li {
+   339→  display: flex;
+   340→  align-items: baseline;
+   341→  gap: 6px;
+   342→}
+   343→li::before {
+   344→  content: '›';
+   345→  flex-shrink: 0;
+   346→}
+   347→
+   348→/* RIGHT — text wraps normally */
+   349→li {
+   350→  padding-left: 14px;
+   351→  position: relative;
+   352→}
+   353→li::before {
+   354→  content: '›';
+   355→  position: absolute;
+   356→  left: 0;
+   357→}
+   358→```
+   359→
+   360→### List markers overlapping container borders
+   361→
+   362→By default, `list-style-position: outside` places list markers (bullets, numbers) outside the content box. When lists are inside bordered containers (cards, callout boxes), the markers can overlap or extend beyond the border.
+   363→
+   364→```css
+   365→/* WRONG — markers overlap container border */
+   366→.card ol, .card ul {
+   367→  padding-left: 20px;  /* Not enough for outside markers */
+   368→}
+   369→
+   370→/* RIGHT — use inside positioning */
+   371→.card ol, .card ul {
+   372→  list-style-position: inside;
+   373→}
+   374→
+   375→/* OR — adequate padding for outside markers */
+   376→.card ol, .card ul {
+   377→  padding-left: 2em;  /* ~32px gives room for markers */
+   378→}
+   379→
+   380→/* OR — custom markers with absolute positioning (most control) */
+   381→.card ol {
+   382→  list-style: none;
+   383→  padding-left: 0;
+   384→  counter-reset: item;
+   385→}
+   386→.card ol li {
+   387→  counter-increment: item;
+   388→  padding-left: 2em;
+   389→  position: relative;
+   390→}
+   391→.card ol li::before {
+   392→  content: counter(item) ".";
+   393→  position: absolute;
+   394→  left: 0;
+   395→  color: var(--accent);
+   396→  font-weight: 600;
+   397→}
+   398→```
+   399→
+   400→**Rule of thumb:** Any `<ol>` or `<ul>` inside a bordered container needs either `list-style-position: inside` or `padding-left: 2em` minimum. The default 20px padding is not enough for outside-positioned markers.
+   401→
+   402→## Mermaid Containers
+   403→
+   404→Mermaid diagrams have two common layout issues: they render too small to read, and they left-align in their container leaving awkward dead space (especially for narrow vertical flowcharts).
+   405→
+   406→### Centering (Required)
+   407→
+   408→Mermaid SVGs render at a fixed size based on content. Without explicit centering, they default to top-left alignment. **Always center Mermaid diagrams** — narrow vertical flowcharts look particularly bad when left-aligned in a wide container.
+   409→
+   410→```css
+   411→/* WRONG — diagram hugs left edge */
+   412→.mermaid-container {
+   413→  padding: 24px;
+   414→  border: 1px solid var(--border);
+   415→}
+   416→
+   417→/* RIGHT — diagram centers in container */
+   418→.mermaid-wrap {
+   419→  display: flex;
+   420→  justify-content: center;
+   421→  align-items: flex-start;  /* or center for shorter diagrams */
+   422→  padding: 24px;
+   423→  border: 1px solid var(--border);
+   424→}
+   425→```
+   426→
+   427→### Scaling Small Diagrams
+   428→
+   429→Mermaid sizes diagrams based on content, not container. Complex diagrams with many nodes render small to fit everything, leaving the text nearly unreadable. Three fixes:
+   430→
+   431→**1. Increase fontSize in themeVariables** (most effective):
+   432→```javascript
+   433→mermaid.initialize({
+   434→  theme: 'base',
+   435→  themeVariables: {
+   436→    fontSize: '18px',  // default is 16px, bump to 18-20px for complex diagrams
+   437→  }
+   438→});
+   439→```
+   440→
+   441→**2. CSS zoom** for diagrams that still render too small:
+   442→```css
+   443→.mermaid-wrap--scaled .mermaid {
+   444→  zoom: 1.3;
+   445→}
+   446→```
+   447→
+   448→**3. Constrain container width** so the diagram doesn't float in dead space:
+   449→```css
+   450→.mermaid-wrap--constrained {
+   451→  max-width: 800px;
+   452→  margin: 0 auto;
+   453→}
+   454→```
+   455→
+   456→**Rule of thumb:** If the diagram has 10+ nodes or the text is smaller than 12px rendered, increase fontSize to 18-20px or apply CSS zoom.
+   457→
+   458→### Zoom Controls
+   459→
+   460→Add zoom controls to every `.mermaid-wrap` container for complex diagrams.
+   461→
+   462→**Small diagrams in slides.** If a diagram has fewer than ~7 nodes with no branching, it will render tiny in a full-viewport slide container. For simple linear flows (A → B → C → D), use CSS pipeline cards instead of Mermaid — see `slide-patterns.md` "CSS Pipeline Slide." Reserve Mermaid for complex graphs where automatic edge routing is actually needed.
+   463→
+   464→### Full Pattern
+   465→
+   466→```css
+   467→.mermaid-wrap {
+   468→  position: relative;
+   469→  background: var(--surface);
+   470→  border: 1px solid var(--border);
+   471→  border-radius: 12px;
+   472→  padding: 32px 24px;
+   473→  overflow: auto;
+   474→  /* CRITICAL: center the diagram both horizontally and vertically */
+   475→  display: flex;
+   476→  justify-content: center;
+   477→  align-items: center;
+   478→  /* Prevent vertical flowcharts from compressing into unreadable thumbnails */
+   479→  min-height: 400px;
+   480→  scrollbar-width: thin;
+   481→  scrollbar-color: var(--border) transparent;
+   482→}
+   483→.mermaid-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
+   484→.mermaid-wrap::-webkit-scrollbar-track { background: transparent; }
+   485→.mermaid-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+   486→.mermaid-wrap::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+   487→
+   488→/* For shorter diagrams that don't need the full height */
+   489→.mermaid-wrap--compact { min-height: 200px; }
+   490→
+   491→/* For very tall vertical flowcharts */
+   492→.mermaid-wrap--tall { min-height: 600px; }
+   493→
+   494→.mermaid-wrap .mermaid {
+   495→  /* Use CSS zoom instead of transform: scale().
+   496→     Zoom changes actual layout size, so overflow scrolls normally in all directions.
+   497→     Transform only changes visual appearance — content expanding upward/leftward
+   498→     goes into negative space which can't be scrolled to.
+   499→     Supported in all browsers (Firefox added support in v126, June 2024).
+   500→     Note: zoom is not animatable, so no transition. */
+   501→  /* Optional: start at >1 for complex diagrams that render too small.
+   502→     The diagram stays centered, renders larger, and zoom controls still work. */
+   503→  zoom: 1.4;
+   504→}
+   505→
+   506→.zoom-controls {
+   507→  position: absolute;
+   508→  top: 8px;
+   509→  right: 8px;
+   510→  display: flex;
+   511→  gap: 2px;
+   512→  z-index: 10;
+   513→  background: var(--surface);
+   514→  border: 1px solid var(--border);
+   515→  border-radius: 6px;
+   516→  padding: 2px;
+   517→}
+   518→
+   519→.zoom-controls button {
+   520→  width: 28px;
+   521→  height: 28px;
+   522→  border: none;
+   523→  background: transparent;
+   524→  color: var(--text-dim);
+   525→  font-family: var(--font-mono);
+   526→  font-size: 14px;
+   527→  cursor: pointer;
+   528→  border-radius: 4px;
+   529→  display: flex;
+   530→  align-items: center;
+   531→  justify-content: center;
+   532→  transition: background 0.15s ease, color 0.15s ease;
+   533→}
+   534→
+   535→.zoom-controls button:hover {
+   536→  background: var(--border);
+   537→  color: var(--text);
+   538→}
+   539→
+   540→.mermaid-wrap { cursor: grab; }
+   541→.mermaid-wrap.is-panning { cursor: grabbing; user-select: none; }
+   542→```
+   543→
+   544→**Why zoom instead of transform?**
+   545→
+   546→CSS `transform: scale()` only changes visual appearance — the element's layout box stays the same size. When you scale from `center center`, content expands upward and leftward into negative coordinate space. Scroll containers can't scroll to negative positions, so the top and left of the zoomed content get clipped.
+   547→
+   548→CSS `zoom` actually changes the element's layout size. The content grows downward and rightward like any other growing element, staying fully scrollable.
+   549→
+   550→### HTML
+   551→
+   552→```html
+   553→<div class="mermaid-wrap">
+   554→  <div class="zoom-controls">
+   555→    <button onclick="zoomDiagram(this, 1.2)" title="Zoom in">+</button>
+   556→    <button onclick="zoomDiagram(this, 0.8)" title="Zoom out">&minus;</button>
+   557→    <button onclick="resetZoom(this)" title="Reset zoom">&#8634;</button>
+   558→  </div>
+   559→  <pre class="mermaid">
+   560→    graph TD
+   561→      A --> B
+   562→  </pre>
+   563→</div>
+   564→```
+   565→
+   566→### JavaScript
+   567→
+   568→Add once at the end of the page. Handles button clicks and scroll-to-zoom on all `.mermaid-wrap` containers:
+   569→
+   570→```javascript
+   571→// Match this to the CSS zoom value (or 1 if not set)
+   572→var INITIAL_ZOOM = 1.4;
+   573→
+   574→function zoomDiagram(btn, factor) {
+   575→  var wrap = btn.closest('.mermaid-wrap');
+   576→  var target = wrap.querySelector('.mermaid');
+   577→  var current = parseFloat(target.dataset.zoom || INITIAL_ZOOM);
+   578→  var next = Math.min(Math.max(current * factor, 0.5), 5);
+   579→  target.dataset.zoom = next;
+   580→  target.style.zoom = next;
+   581→}
+   582→
+   583→function resetZoom(btn) {
+   584→  var wrap = btn.closest('.mermaid-wrap');
+   585→  var target = wrap.querySelector('.mermaid');
+   586→  target.dataset.zoom = INITIAL_ZOOM;
+   587→  target.style.zoom = INITIAL_ZOOM;
+   588→}
+   589→
+   590→document.querySelectorAll('.mermaid-wrap').forEach(function(wrap) {
+   591→  // Ctrl/Cmd + scroll to zoom
+   592→  wrap.addEventListener('wheel', function(e) {
+   593→    if (!e.ctrlKey && !e.metaKey) return;
+   594→    e.preventDefault();
+   595→    var target = wrap.querySelector('.mermaid');
+   596→    var current = parseFloat(target.dataset.zoom || INITIAL_ZOOM);
+   597→    var factor = e.deltaY < 0 ? 1.1 : 0.9;
+   598→    var next = Math.min(Math.max(current * factor, 0.5), 5);
+   599→    target.dataset.zoom = next;
+   600→    target.style.zoom = next;
+   601→  }, { passive: false });
+   602→
+   603→  // Click-and-drag to pan
+   604→  var startX, startY, scrollL, scrollT;
+   605→  wrap.addEventListener('mousedown', function(e) {
+   606→    if (e.target.closest('.zoom-controls')) return;
+   607→    wrap.classList.add('is-panning');
+   608→    startX = e.clientX;
+   609→    startY = e.clientY;
+   610→    scrollL = wrap.scrollLeft;
+   611→    scrollT = wrap.scrollTop;
+   612→  });
+   613→  window.addEventListener('mousemove', function(e) {
+   614→    if (!wrap.classList.contains('is-panning')) return;
+   615→    wrap.scrollLeft = scrollL - (e.clientX - startX);
+   616→    wrap.scrollTop = scrollT - (e.clientY - startY);
+   617→  });
+   618→  window.addEventListener('mouseup', function() {
+   619→    wrap.classList.remove('is-panning');
+   620→  });
+   621→});
+   622→```
+   623→
+   624→Scroll-to-zoom requires Ctrl/Cmd+scroll to avoid hijacking normal page scroll. Cursor changes to `grab`/`grabbing` to signal pan mode. The zoom range is capped at 0.5x–5x.
+   625→
+   626→## Grid Layouts
+   627→
+   628→### Architecture Diagram (2-column with sidebar)
+   629→```css
+   630→.arch-grid {
+   631→  display: grid;
+   632→  grid-template-columns: 260px 1fr;
+   633→  grid-template-rows: auto;
+   634→  gap: 20px;
+   635→  max-width: 1100px;
+   636→  margin: 0 auto;
+   637→}
+   638→
+   639→.arch-grid__sidebar { grid-column: 1; }
+   640→.arch-grid__main { grid-column: 2; }
+   641→.arch-grid__full { grid-column: 1 / -1; }
+   642→```
+   643→
+   644→### Pipeline (horizontal steps)
+   645→```css
+   646→.pipeline {
+   647→  display: flex;
+   648→  align-items: stretch;
+   649→  gap: 0;
+   650→  overflow-x: auto;
+   651→  padding-bottom: 8px;
+   652→}
+   653→
+   654→.pipeline__step {
+   655→  min-width: 130px;
+   656→  flex-shrink: 0;
+   657→}
+   658→
+   659→.pipeline__arrow {
+   660→  display: flex;
+   661→  align-items: center;
+   662→  padding: 0 4px;
+   663→  color: var(--border-bright);
+   664→  font-size: 18px;
+   665→  flex-shrink: 0;
+   666→}
+   667→
+   668→/* Parallel branch within a pipeline */
+   669→.pipeline__parallel {
+   670→  display: flex;
+   671→  flex-direction: column;
+   672→  gap: 6px;
+   673→}
+   674→```
+   675→
+   676→### Card Grid (dashboard / metrics)
+   677→```css
+   678→.card-grid {
+   679→  display: grid;
+   680→  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+   681→  gap: 16px;
+   682→}
+   683→```
+   684→
+   685→### Data Tables
+   686→
+   687→Use real `<table>` elements for tabular data. Wrap in a scrollable container for wide tables.
+   688→
+   689→```css
+   690→/* Scrollable wrapper for wide tables */
+   691→.table-wrap {
+   692→  background: var(--surface);
+   693→  border: 1px solid var(--border);
+   694→  border-radius: 12px;
+   695→  overflow: hidden;
+   696→}
+   697→
+   698→.table-scroll {
+   699→  overflow-x: auto;
+   700→  -webkit-overflow-scrolling: touch;
+   701→}
+   702→
+   703→/* Base table */
+   704→.data-table {
+   705→  width: 100%;
+   706→  border-collapse: collapse;
+   707→  font-size: 13px;
+   708→  line-height: 1.5;
+   709→}
+   710→
+   711→/* Header */
+   712→.data-table thead {
+   713→  position: sticky;
+   714→  top: 0;
+   715→  z-index: 2;
+   716→}
+   717→
+   718→.data-table th {
+   719→  background: var(--surface-elevated, var(--surface2, var(--surface)));
+   720→  font-family: var(--font-mono);
+   721→  font-size: 11px;
+   722→  font-weight: 600;
+   723→  text-transform: uppercase;
+   724→  letter-spacing: 1px;
+   725→  color: var(--text-dim);
+   726→  text-align: left;
+   727→  padding: 12px 16px;
+   728→  border-bottom: 2px solid var(--border-bright);
+   729→  white-space: nowrap;
+   730→}
+   731→
+   732→/* Cells */
+   733→.data-table td {
+   734→  padding: 12px 16px;
+   735→  border-bottom: 1px solid var(--border);
+   736→  vertical-align: top;
+   737→  color: var(--text);
+   738→}
+   739→
+   740→/* Let text-heavy columns wrap naturally */
+   741→.data-table .wide {
+   742→  min-width: 200px;
+   743→  max-width: 500px;
+   744→}
+   745→
+   746→/* Right-align numeric columns */
+   747→.data-table td.num,
+   748→.data-table th.num {
+   749→  text-align: right;
+   750→  font-variant-numeric: tabular-nums;
+   751→  font-family: var(--font-mono);
+   752→}
+   753→
+   754→/* Alternating rows */
+   755→.data-table tbody tr:nth-child(even) {
+   756→  background: var(--accent-dim);
+   757→}
+   758→
+   759→/* Row hover */
+   760→.data-table tbody tr {
+   761→  transition: background 0.15s ease;
+   762→}
+   763→
+   764→.data-table tbody tr:hover {
+   765→  background: var(--border);
+   766→}
+   767→
+   768→/* Last row: no bottom border (container handles it) */
+   769→.data-table tbody tr:last-child td {
+   770→  border-bottom: none;
+   771→}
+   772→
+   773→/* Code inside cells */
+   774→.data-table code {
+   775→  font-family: var(--font-mono);
+   776→  font-size: 11px;
+   777→  background: var(--accent-dim);
+   778→  color: var(--accent);
+   779→  padding: 1px 5px;
+   780→  border-radius: 3px;
+   781→}
+   782→
+   783→/* Secondary detail text */
+   784→.data-table small {
+   785→  display: block;
+   786→  color: var(--text-dim);
+   787→  font-size: 11px;
+   788→  margin-top: 2px;
+   789→}
+   790→```
+   791→
+   792→#### Status Indicators
+   793→
+   794→Styled spans for match/gap/warning states. Never use emoji.
+   795→
+   796→```css
+   797→.status {
+   798→  display: inline-flex;
+   799→  align-items: center;
+   800→  gap: 6px;
+   801→  font-family: var(--font-mono);
+   802→  font-size: 11px;
+   803→  font-weight: 500;
+   804→  padding: 3px 10px;
+   805→  border-radius: 6px;
+   806→  white-space: nowrap;
+   807→}
+   808→
+   809→.status--match {
+   810→  background: var(--green-dim, rgba(5, 150, 105, 0.1));
+   811→  color: var(--green, #059669);
+   812→}
+   813→
+   814→.status--gap {
+   815→  background: var(--red-dim, rgba(239, 68, 68, 0.1));
+   816→  color: var(--red, #ef4444);
+   817→}
+   818→
+   819→.status--warn {
+   820→  background: var(--orange-dim, rgba(217, 119, 6, 0.1));
+   821→  color: var(--orange, #d97706);
+   822→}
+   823→
+   824→.status--info {
+   825→  background: var(--accent-dim);
+   826→  color: var(--accent);
+   827→}
+   828→
+   829→/* Dot variant (compact, no text) */
+   830→.status-dot {
+   831→  width: 8px;
+   832→  height: 8px;
+   833→  border-radius: 50%;
+   834→  display: inline-block;
+   835→}
+   836→
+   837→.status-dot--match { background: var(--green, #059669); }
+   838→.status-dot--gap { background: var(--red, #ef4444); }
+   839→.status-dot--warn { background: var(--orange, #d97706); }
+   840→```
+   841→
+   842→Usage in table cells:
+   843→```html
+   844→<td><span class="status status--match">Match</span></td>
+   845→<td><span class="status status--gap">Gap</span></td>
+   846→<td><span class="status status--warn">Partial</span></td>
+   847→```
+   848→
+   849→#### Table Summary Row
+   850→
+   851→For totals, counts, or aggregate status at the bottom:
+   852→
+   853→```css
+   854→.data-table tfoot td {
+   855→  background: var(--surface-elevated, var(--surface2, var(--surface)));
+   856→  font-weight: 600;
+   857→  font-size: 12px;
+   858→  border-top: 2px solid var(--border-bright);
+   859→  border-bottom: none;
+   860→  padding: 12px 16px;
+   861→}
+   862→```
+   863→
+   864→#### Sticky First Column (for very wide tables)
+   865→
+   866→```css
+   867→.data-table th:first-child,
+   868→.data-table td:first-child {
+   869→  position: sticky;
+   870→  left: 0;
+   871→  z-index: 1;
+   872→  background: var(--surface);
+   873→}
+   874→
+   875→.data-table tbody tr:nth-child(even) td:first-child {
+   876→  background: color-mix(in srgb, var(--surface) 95%, var(--accent) 5%);
+   877→}
+   878→```
+   879→
+   880→## Connectors
+   881→
+   882→### CSS Arrow (vertical, between stacked sections)
+   883→```css
+   884→.flow-arrow {
+   885→  display: flex;
+   886→  justify-content: center;
+   887→  align-items: center;
+   888→  gap: 8px;
+   889→  color: var(--text-dim);
+   890→  font-family: var(--font-mono);
+   891→  font-size: 12px;
+   892→  padding: 6px 0;
+   893→}
+   894→
+   895→/* Down arrow via SVG icon */
+   896→.flow-arrow svg {
+   897→  width: 20px;
+   898→  height: 20px;
+   899→  fill: none;
+   900→  stroke: var(--border-bright);
+   901→  stroke-width: 2;
+   902→  stroke-linecap: round;
+   903→  stroke-linejoin: round;
+   904→}
+   905→```
+   906→
+   907→Down arrow SVG (reuse inline):
+   908→```html
+   909→<svg viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12"/></svg>
+   910→```
+   911→
+   912→### CSS Arrow (horizontal, between inline steps)
+   913→Use `::after` or a literal arrow character:
+   914→```css
+   915→.h-arrow::after {
+   916→  content: '→';
+   917→  color: var(--border-bright);
+   918→  font-size: 18px;
+   919→  padding: 0 4px;
+   920→}
+   921→```
+   922→
+   923→### SVG Curved Connector (between arbitrary nodes)
+   924→For connections that aren't simple vertical/horizontal, use an absolutely positioned SVG overlay:
+   925→```html
+   926→<svg class="connectors" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;">
+   927→  <path d="M 150,100 C 150,200 350,100 350,200" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 3"/>
+   928→  <!-- Arrowhead -->
+   929→  <polygon points="348,195 352,205 356,195" fill="var(--accent)"/>
+   930→</svg>
+   931→```
+   932→
+   933→Position the parent container as `position: relative` to scope the SVG overlay.
+   934→
+   935→## Animations
+   936→
+   937→### Staggered Fade-In on Load
+   938→
+   939→Define the keyframe once, then stagger via a `--i` CSS variable set per element. This approach works regardless of DOM nesting or interleaved non-animated elements (unlike `nth-child` which breaks when siblings aren't all the same type).
+   940→
+   941→```css
+   942→@keyframes fadeUp {
+   943→  from { opacity: 0; transform: translateY(12px); }
+   944→  to { opacity: 1; transform: translateY(0); }
+   945→}
+   946→
+   947→.ve-card {
+   948→  animation: fadeUp 0.4s ease-out both;
+   949→  animation-delay: calc(var(--i, 0) * 0.05s);
+   950→}
+   951→```
+   952→
+   953→Set `--i` per element in the HTML to control stagger order:
+   954→
+   955→```html
+   956→<div class="ve-card" style="--i: 0">First</div>
+   957→<div class="connector">...</div>
+   958→<div class="ve-card" style="--i: 1">Second</div>
+   959→<div class="connector">...</div>
+   960→<div class="ve-card" style="--i: 2">Third</div>
+   961→```
+   962→
+   963→### Hover Lift
+   964→```css
+   965→.ve-card {
+   966→  transition: transform 0.2s ease, box-shadow 0.2s ease;
+   967→}
+   968→
+   969→.ve-card:hover {
+   970→  transform: translateY(-2px);
+   971→  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+   972→}
+   973→```
+   974→
+   975→### Scale-Fade (for KPI cards, badges, status indicators)
+   976→
+   977→```css
+   978→@keyframes fadeScale {
+   979→  from { opacity: 0; transform: scale(0.92); }
+   980→  to { opacity: 1; transform: scale(1); }
+   981→}
+   982→
+   983→.kpi-card {
+   984→  animation: fadeScale 0.35s ease-out both;
+   985→  animation-delay: calc(var(--i, 0) * 0.06s);
+   986→}
+   987→```
+   988→
+   989→### SVG Draw-In (for connectors, progress rings, path elements)
+   990→
+   991→```css
+   992→@keyframes drawIn {
+   993→  from { stroke-dashoffset: var(--path-length); }
+   994→  to { stroke-dashoffset: 0; }
+   995→}
+   996→
+   997→/* Set --path-length to the path's getTotalLength() value */
+   998→.connector path {
+   999→  stroke-dasharray: var(--path-length);
+  1000→  animation: drawIn 0.8s ease-in-out both;
+  1001→  animation-delay: calc(var(--i, 0) * 0.1s);
+  1002→}
+  1003→```
+  1004→
+  1005→### CSS Counter (for hero numbers without JS)
+  1006→
+  1007→Uses `@property` to animate a custom property as an integer, then display it via `counter()`. No JS required. Falls back to showing the final value immediately in browsers without `@property` support.
+  1008→
+  1009→```css
+  1010→@property --count {
+  1011→  syntax: '<integer>';
+  1012→  initial-value: 0;
+  1013→  inherits: false;
+  1014→}
+  1015→
+  1016→@keyframes countUp {
+  1017→  to { --count: var(--target); }
+  1018→}
+  1019→
+  1020→.kpi-card__value--animated {
+  1021→  --target: 247;
+  1022→  counter-reset: val var(--count);
+  1023→  animation: countUp 1.2s ease-out forwards;
+  1024→}
+  1025→
+  1026→.kpi-card__value--animated::after {
+  1027→  content: counter(val);
+  1028→}
+  1029→```
+  1030→
+  1031→### Choreography
+  1032→
+  1033→Don't use the same animation for everything. Mix types by element role, with easing stagger (fast-then-slow, not linear):
+  1034→
+  1035→- **Cards**: `fadeUp` — the default entrance, reliable and subtle
+  1036→- **KPI / badges**: `fadeScale` — scale draws the eye to important numbers
+  1037→- **SVG connectors**: `drawIn` — reveals flow direction, pairs with card stagger
+  1038→- **Hero numbers**: `countUp` — counting motion signals "this number matters"
+  1039→- **Stagger timing**: `calc(var(--i) * 0.06s)` with lower `--i` values on important elements so they appear first
+  1040→
+  1041→### Respect Reduced Motion
+  1042→```css
+  1043→@media (prefers-reduced-motion: reduce) {
+  1044→  *, *::before, *::after {
+  1045→    animation-duration: 0.01ms !important;
+  1046→    animation-iteration-count: 1 !important;
+  1047→    transition-duration: 0.01ms !important;
+  1048→  }
+  1049→}
+  1050→```
+  1051→
+  1052→## Sparklines and Simple Charts (Pure SVG)
+  1053→
+  1054→For simple inline visualizations without a library:
+  1055→
+  1056→```html
+  1057→<!-- Sparkline -->
+  1058→<svg viewBox="0 0 100 30" style="width:100px;height:30px;">
+  1059→  <polyline points="0,25 15,20 30,22 45,10 60,15 75,5 90,12 100,8"
+  1060→    fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
+  1061→</svg>
+  1062→
+  1063→<!-- Progress bar -->
+  1064→<div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+  1065→  <div style="height:100%;width:72%;background:var(--accent);border-radius:3px;"></div>
+  1066→</div>
+  1067→```
+  1068→
+  1069→## Responsive Breakpoint
+  1070→
+  1071→Include a single breakpoint for narrow viewports:
+  1072→
+  1073→```css
+  1074→@media (max-width: 768px) {
+  1075→  .arch-grid { grid-template-columns: 1fr; }
+  1076→  .pipeline { flex-wrap: wrap; gap: 8px; }
+  1077→  .pipeline__arrow { display: none; }
+  1078→  body { padding: 16px; }
+  1079→}
+  1080→```
+  1081→
+  1082→## Badges and Tags
+  1083→
+  1084→Small inline labels for categorizing elements:
+  1085→
+  1086→```css
+  1087→.tag {
+  1088→  font-family: var(--font-mono);
+  1089→  font-size: 10px;
+  1090→  font-weight: 500;
+  1091→  padding: 2px 7px;
+  1092→  border-radius: 4px;
+  1093→  background: var(--node-a-dim);
+  1094→  color: var(--node-a);
+  1095→}
+  1096→```
+  1097→
+  1098→## Lists Inside Nodes
+  1099→
+  1100→For tool listings, feature lists, table columns:
+  1101→
+  1102→```css
+  1103→.node-list {
+  1104→  list-style: none;
+  1105→  padding: 0;
+  1106→  margin: 0;
+  1107→  font-size: 12px;
+  1108→  line-height: 1.8;
+  1109→}
+  1110→
+  1111→.node-list li {
+  1112→  padding-left: 14px;
+  1113→  position: relative;
+  1114→}
+  1115→
+  1116→.node-list li::before {
+  1117→  content: '›';
+  1118→  color: var(--text-dim);
+  1119→  font-weight: 600;
+  1120→  position: absolute;
+  1121→  left: 0;
+  1122→}
+  1123→
+  1124→.node-list code {
+  1125→  font-family: var(--font-mono);
+  1126→  font-size: 11px;
+  1127→  background: var(--accent-dim);
+  1128→  color: var(--accent);
+  1129→  padding: 1px 5px;
+  1130→  border-radius: 3px;
+  1131→}
+  1132→```
+  1133→
+  1134→## KPI / Metric Cards
+  1135→
+  1136→Large hero number with trend indicator and label. For dashboards, review summaries, and impact sections.
+  1137→
+  1138→```css
+  1139→.kpi-row {
+  1140→  display: grid;
+  1141→  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  1142→  gap: 16px;
+  1143→}
+  1144→
+  1145→.kpi-card {
+  1146→  background: var(--surface-elevated);
+  1147→  border: 1px solid var(--border);
+  1148→  border-radius: 10px;
+  1149→  padding: 20px;
+  1150→  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  1151→}
+  1152→
+  1153→.kpi-card__value {
+  1154→  font-size: 36px;
+  1155→  font-weight: 700;
+  1156→  letter-spacing: -1px;
+  1157→  line-height: 1.1;
+  1158→  font-variant-numeric: tabular-nums;
+  1159→}
+  1160→
+  1161→.kpi-card__label {
+  1162→  font-family: var(--font-mono);
+  1163→  font-size: 10px;
+  1164→  font-weight: 600;
+  1165→  text-transform: uppercase;
+  1166→  letter-spacing: 1.5px;
+  1167→  color: var(--text-dim);
+  1168→  margin-top: 6px;
+  1169→}
+  1170→
+  1171→.kpi-card__trend {
+  1172→  font-family: var(--font-mono);
+  1173→  font-size: 12px;
+  1174→  margin-top: 4px;
+  1175→}
+  1176→
+  1177→.kpi-card__trend--up { color: var(--node-b, #059669); }
+  1178→.kpi-card__trend--down { color: var(--red, #ef4444); }
+  1179→```
+  1180→
+  1181→```html
+  1182→<div class="kpi-row">
+  1183→  <div class="kpi-card">
+  1184→    <div class="kpi-card__value">247</div>
+  1185→    <div class="kpi-card__label">Lines Added</div>
+  1186→    <div class="kpi-card__trend kpi-card__trend--up">+34%</div>
+  1187→  </div>
+  1188→  <!-- ... more cards -->
+  1189→</div>
+  1190→```
+  1191→
+  1192→## Before / After Panels
+  1193→
+  1194→Two-column comparison with diff-colored headers. For review pages, migration docs, and feature comparisons.
+  1195→
+  1196→```css
+  1197→.diff-panels {
+  1198→  display: grid;
+  1199→  grid-template-columns: 1fr 1fr;
+  1200→  gap: 0;
+  1201→  border: 1px solid var(--border);
+  1202→  border-radius: 10px;
+  1203→  overflow: hidden;
+  1204→}
+  1205→
+  1206→.diff-panels > * { min-width: 0; overflow-wrap: break-word; }
+  1207→
+  1208→.diff-panel__header {
+  1209→  font-family: var(--font-mono);
+  1210→  font-size: 11px;
+  1211→  font-weight: 600;
+  1212→  text-transform: uppercase;
+  1213→  letter-spacing: 1px;
+  1214→  padding: 10px 16px;
+  1215→}
+  1216→
+  1217→.diff-panel__header--before {
+  1218→  background: var(--red-dim, rgba(239, 68, 68, 0.08));
+  1219→  color: var(--red, #ef4444);
+  1220→  border-bottom: 2px solid var(--red, #ef4444);
+  1221→}
+  1222→
+  1223→.diff-panel__header--after {
+  1224→  background: var(--green-dim, rgba(5, 150, 105, 0.08));
+  1225→  color: var(--green, #059669);
+  1226→  border-bottom: 2px solid var(--green, #059669);
+  1227→}
+  1228→
+  1229→.diff-panel__body {
+  1230→  padding: 16px;
+  1231→  background: var(--surface);
+  1232→  font-size: 13px;
+  1233→  line-height: 1.6;
+  1234→}
+  1235→
+  1236→/* Highlight changed items within a panel */
+  1237→.diff-changed {
+  1238→  background: var(--accent-dim);
+  1239→  border-radius: 3px;
+  1240→  padding: 0 3px;
+  1241→}
+  1242→
+  1243→@media (max-width: 768px) {
+  1244→  .diff-panels { grid-template-columns: 1fr; }
+  1245→}
+  1246→```
+  1247→
+  1248→```html
+  1249→<div class="diff-panels">
+  1250→  <div class="diff-panel__header diff-panel__header--before">Before</div>
+  1251→  <div class="diff-panel__header diff-panel__header--after">After</div>
+  1252→  <div class="diff-panel__body">Previous implementation...</div>
+  1253→  <div class="diff-panel__body">New implementation...</div>
+  1254→</div>
+  1255→```
+  1256→
+  1257→## Collapsible Sections
+  1258→
+  1259→Native `<details>/<summary>` with styled disclosure. Zero JS, accessible. For lower-priority content: file maps, decision logs, reference sections.
+  1260→
+  1261→```css
+  1262→details.collapsible {
+  1263→  border: 1px solid var(--border);
+  1264→  border-radius: 10px;
+  1265→  overflow: hidden;
+  1266→}
+  1267→
+  1268→details.collapsible summary {
+  1269→  padding: 14px 20px;
+  1270→  background: var(--surface);
+  1271→  font-family: var(--font-mono);
+  1272→  font-size: 12px;
+  1273→  font-weight: 600;
+  1274→  cursor: pointer;
+  1275→  list-style: none;
+  1276→  display: flex;
+  1277→  align-items: center;
+  1278→  gap: 8px;
+  1279→  color: var(--text);
+  1280→  transition: background 0.15s ease;
+  1281→}
+  1282→
+  1283→details.collapsible summary:hover {
+  1284→  background: var(--surface-elevated, var(--surface));
+  1285→}
+  1286→
+  1287→details.collapsible summary::-webkit-details-marker { display: none; }
+  1288→
+  1289→/* Chevron indicator */
+  1290→details.collapsible summary::before {
+  1291→  content: '▸';
+  1292→  font-size: 11px;
+  1293→  color: var(--text-dim);
+  1294→  transition: transform 0.15s ease;
+  1295→}
+  1296→
+  1297→details.collapsible[open] summary::before {
+  1298→  transform: rotate(90deg);
+  1299→}
+  1300→
+  1301→details.collapsible .collapsible__body {
+  1302→  padding: 16px 20px;
+  1303→  border-top: 1px solid var(--border);
+  1304→  font-size: 13px;
+  1305→  line-height: 1.6;
+  1306→}
+  1307→```
+  1308→
+  1309→```html
+  1310→<details class="collapsible">
+  1311→  <summary>File Map (14 files changed)</summary>
+  1312→  <div class="collapsible__body">
+  1313→    <!-- content here -->
+  1314→  </div>
+  1315→</details>
+  1316→```
+  1317→
+  1318→## Prose Page Elements
+  1319→
+  1320→Patterns for documentation, articles, blog posts, and other reading-first content. The key difference from visual explanations: optimize for sustained reading, not scanning.
+  1321→
+  1322→### Body Text Settings
+  1323→
+  1324→```css
+  1325→/* Comfortable reading baseline */
+  1326→.prose {
+  1327→  font-size: clamp(17px, 1.1vw + 14px, 19px);
+  1328→  line-height: 1.7;
+  1329→  max-width: 65ch;  /* ~600-680px */
+  1330→  text-wrap: pretty;
+  1331→}
+  1332→
+  1333→.prose p {
+  1334→  margin-bottom: 1.5em;
+  1335→}
+  1336→
+  1337→/* Narrow column for essays/literary content */
+  1338→.prose--narrow {
+  1339→  max-width: 60ch;
+  1340→  line-height: 1.8;
+  1341→}
+  1342→
+  1343→/* Wide column for technical content with code */
+  1344→.prose--wide {
+  1345→  max-width: 75ch;
+  1346→  line-height: 1.6;
+  1347→}
+  1348→```
+  1349→
+  1350→### Lead Paragraph
+  1351→
+  1352→Opening paragraph styled distinctly from body text.
+  1353→
+  1354→```css
+  1355→/* Larger size */
+  1356→.lead {
+  1357→  font-size: 20px;
+  1358→  line-height: 1.6;
+  1359→  color: var(--text-bright);
+  1360→  margin-bottom: 32px;
+  1361→}
+  1362→
+  1363→/* With drop cap */
+  1364→.lead--dropcap::first-letter {
+  1365→  float: left;
+  1366→  font-family: var(--font-display);
+  1367→  font-size: 64px;
+  1368→  font-weight: 600;
+  1369→  line-height: 0.85;
+  1370→  padding-right: 12px;
+  1371→  padding-top: 6px;
+  1372→  color: var(--accent);
+  1373→}
+  1374→```
+  1375→
+  1376→### Pull Quotes
+  1377→
+  1378→Key insights pulled out for emphasis. Use sparingly — one or two per article maximum.
+  1379→
+  1380→```css
+  1381→/* Border left — most versatile */
+  1382→.pullquote {
+  1383→  margin: 48px 0;
+  1384→  padding-left: 24px;
+  1385→  border-left: 3px solid var(--accent);
+  1386→}
+  1387→.pullquote p {
+  1388→  font-size: 22px;
+  1389→  font-style: italic;
+  1390→  line-height: 1.4;
+  1391→  color: var(--text-bright);
+  1392→  margin: 0;
+  1393→}
+  1394→
+  1395→/* Centered with quotation mark */
+  1396→.pullquote--centered {
+  1397→  margin: 56px 0;
+  1398→  padding: 32px 40px;
+  1399→  border-top: 1px solid var(--border);
+  1400→  border-bottom: 1px solid var(--border);
+  1401→  text-align: center;
+  1402→  position: relative;
+  1403→}
+  1404→.pullquote--centered::before {
+  1405→  content: '"';
+  1406→  position: absolute;
+  1407→  top: -12px;
+  1408→  left: 50%;
+  1409→  transform: translateX(-50%);
+  1410→  background: var(--bg);
+  1411→  padding: 0 16px;
+  1412→  font-family: var(--font-display);
+  1413→  font-size: 48px;
+  1414→  color: var(--accent);
+  1415→  line-height: 1;
+  1416→}
+  1417→```
+  1418→
+  1419→### Section Dividers
+  1420→
+  1421→```css
+  1422→/* Horizontal rule */
+  1423→hr {
+  1424→  border: none;
+  1425→  height: 1px;
+  1426→  background: var(--border);
+  1427→  margin: 48px 0;
+  1428→}
+  1429→
+  1430→/* Ornamental divider — use: <div class="divider">✦ ✦ ✦</div> */
+  1431→.divider {
+  1432→  text-align: center;
+  1433→  margin: 48px 0;
+  1434→  color: var(--text-dim);
+  1435→  font-size: 18px;
+  1436→  letter-spacing: 12px;
+  1437→}
+  1438→```
+  1439→
+  1440→### Article Hero Patterns
+  1441→
+  1442→```css
+  1443→/* Centered minimal — essays, personal posts */
+  1444→.hero--centered {
+  1445→  text-align: center;
+  1446→  padding: 80px 24px 64px;
+  1447→  max-width: 800px;
+  1448→  margin: 0 auto;
+  1449→}
+  1450→.hero__category {
+  1451→  font-size: 12px;
+  1452→  font-weight: 600;
+  1453→  text-transform: uppercase;
+  1454→  letter-spacing: 2px;
+  1455→  color: var(--accent);
+  1456→  margin-bottom: 16px;
+  1457→}
+  1458→.hero__title {
+  1459→  font-size: clamp(32px, 5vw, 48px);
+  1460→  font-weight: 600;
+  1461→  line-height: 1.15;
+  1462→  margin-bottom: 16px;
+  1463→}
+  1464→.hero__subtitle {
+  1465→  font-size: 20px;
+  1466→  font-style: italic;
+  1467→  color: var(--text-dim);
+  1468→  max-width: 600px;
+  1469→  margin: 0 auto 24px;
+  1470→}
+  1471→.hero__meta {
+  1472→  font-size: 13px;
+  1473→  color: var(--text-dim);
+  1474→}
+  1475→
+  1476→/* Left-aligned editorial — features, documentation */
+  1477→.hero--editorial {
+  1478→  padding: 100px 40px 60px;
+  1479→  max-width: 1000px;
+  1480→  margin: 0 auto;
+  1481→}
+  1482→.hero--editorial .hero__title {
+  1483→  font-size: clamp(40px, 7vw, 72px);
+  1484→  font-weight: 800;
+  1485→  line-height: 1.0;
+  1486→  letter-spacing: -2px;
+  1487→}
+  1488→```
+  1489→
+  1490→### Author Byline
+  1491→
+  1492→```css
+  1493→.byline {
+  1494→  display: flex;
+  1495→  align-items: center;
+  1496→  gap: 12px;
+  1497→  margin-top: 24px;
+  1498→}
+  1499→.byline__avatar {
+  1500→  width: 40px;
+  1501→  height: 40px;
+  1502→  border-radius: 50%;
+  1503→}
+  1504→.byline__name {
+  1505→  font-weight: 600;
+  1506→  color: var(--text-bright);
+  1507→  display: block;
+  1508→}
+  1509→.byline__meta {
+  1510→  font-size: 13px;
+  1511→  color: var(--text-dim);
+  1512→}
+  1513→```
+  1514→
+  1515→### Callout Boxes
+  1516→
+  1517→For warnings, tips, notes, and key takeaways.
+  1518→
+  1519→```css
+  1520→.callout {
+  1521→  padding: 16px 20px;
+  1522→  border-radius: 8px;
+  1523→  border-left: 4px solid var(--callout-border);
+  1524→  background: var(--callout-bg);
+  1525→  margin: 24px 0;
+  1526→}
+  1527→
+  1528→.callout--info {
+  1529→  --callout-border: var(--accent);
+  1530→  --callout-bg: color-mix(in srgb, var(--accent) 10%, transparent);
+  1531→}
+  1532→
+  1533→.callout--warning {
+  1534→  --callout-border: var(--amber);
+  1535→  --callout-bg: color-mix(in srgb, var(--amber) 10%, transparent);
+  1536→}
+  1537→
+  1538→.callout--success {
+  1539→  --callout-border: var(--green);
+  1540→  --callout-bg: color-mix(in srgb, var(--green) 10%, transparent);
+  1541→}
+  1542→
+  1543→.callout__title {
+  1544→  font-weight: 600;
+  1545→  margin-bottom: 8px;
+  1546→  color: var(--callout-border);
+  1547→}
+  1548→
+  1549→/* Lists inside callouts need padding fix */
+  1550→.callout ul, .callout ol {
+  1551→  padding-left: 1.5em;
+  1552→  margin: 8px 0 0 0;
+  1553→}
+  1554→```
+  1555→
+  1556→### Theme Toggle
+  1557→
+  1558→Use `data-theme` attribute for user-controllable light/dark modes. Random initial theme adds variety.
+  1559→
+  1560→```css
+  1561→:root, [data-theme="light"] {
+  1562→  --bg: #fafaf9;
+  1563→  --surface: #ffffff;
+  1564→  --text: #1c1917;
+  1565→  --text-dim: #78716c;
+  1566→  --border: #e7e5e4;
+  1567→  --accent: #0d9488;
+  1568→}
+  1569→
+  1570→[data-theme="dark"] {
+  1571→  --bg: #0c0a09;
+  1572→  --surface: #1c1917;
+  1573→  --text: #fafaf9;
+  1574→  --text-dim: #a8a29e;
+  1575→  --border: #292524;
+  1576→  --accent: #14b8a6;
+  1577→}
+  1578→```
+  1579→
+  1580→```javascript
+  1581→// Random initial theme
+  1582→const themes = ['light', 'dark'];
+  1583→document.documentElement.setAttribute('data-theme', themes[Math.floor(Math.random() * 2)]);
+  1584→
+  1585→// Toggle function
+  1586→function toggleTheme() {
+  1587→  const current = document.documentElement.getAttribute('data-theme');
+  1588→  document.documentElement.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+  1589→}
+  1590→```
+  1591→
+  1592→```html
+  1593→<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+  1594→  <svg class="theme-toggle__sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  1595→    <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+  1596→  </svg>
+  1597→  <svg class="theme-toggle__moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  1598→    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+  1599→  </svg>
+  1600→</button>
+  1601→```
+  1602→
+  1603→```css
+  1604→.theme-toggle {
+  1605→  position: fixed;
+  1606→  top: 20px;
+  1607→  right: 20px;
+  1608→  background: var(--surface);
+  1609→  border: 1px solid var(--border);
+  1610→  border-radius: 8px;
+  1611→  padding: 8px;
+  1612→  cursor: pointer;
+  1613→  z-index: 100;
+  1614→}
+  1615→[data-theme="light"] .theme-toggle__moon { display: none; }
+  1616→[data-theme="dark"] .theme-toggle__sun { display: none; }
+  1617→```
+  1618→
+  1619→### Prose Anti-Patterns
+  1620→
+  1621→Avoid these in reading-first content:
+  1622→- Body text smaller than 16px
+  1623→- Line-height below 1.5
+  1624→- Measure wider than 75ch (text spanning full viewport)
+  1625→- Pull quotes every other paragraph
+  1626→- Drop caps on every section
+  1627→- Busy background patterns behind text
+  1628→
+  1629→## Generated Images
+  1630→
+  1631→For AI-generated illustrations embedded as base64 data URIs via `surf gemini --generate-image`. Use sparingly — hero banners, conceptual illustrations, educational diagrams, decorative accents.
+  1632→
+  1633→### Hero Banner
+  1634→
+  1635→Full-width image cropped to a fixed height with a gradient fade into the page background. Place at the top of the page before the title, or between the title and the first content section.
+  1636→
+  1637→```css
+  1638→.hero-img-wrap {
+  1639→  position: relative;
+  1640→  border-radius: 12px;
+  1641→  overflow: hidden;
+  1642→  margin-bottom: 24px;
+  1643→}
+  1644→
+  1645→.hero-img-wrap img {
+  1646→  width: 100%;
+  1647→  height: 240px;
+  1648→  object-fit: cover;
+  1649→  display: block;
+  1650→}
+  1651→
+  1652→/* Gradient fade into page background */
+  1653→.hero-img-wrap::after {
+  1654→  content: '';
+  1655→  position: absolute;
+  1656→  bottom: 0;
+  1657→  left: 0;
+  1658→  right: 0;
+  1659→  height: 50%;
+  1660→  background: linear-gradient(to top, var(--bg), transparent);
+  1661→  pointer-events: none;
+  1662→}
+  1663→```
+  1664→
+  1665→```html
+  1666→<div class="hero-img-wrap">
+  1667→  <img src="data:image/png;base64,..." alt="Descriptive alt text">
+  1668→</div>
+  1669→```
+  1670→
+  1671→Generate with `--aspect-ratio 16:9` for hero banners.
+  1672→
+  1673→### Inline Illustration
+  1674→
+  1675→Centered image with border, shadow, and optional caption. Use within content sections for conceptual or educational illustrations.
+  1676→
+  1677→```css
+  1678→.illus {
+  1679→  text-align: center;
+  1680→  margin: 24px 0;
+  1681→}
+  1682→
+  1683→.illus img {
+  1684→  max-width: 480px;
+  1685→  width: 100%;
+  1686→  border-radius: 10px;
+  1687→  border: 1px solid var(--border);
+  1688→  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  1689→}
+  1690→
+  1691→.illus figcaption {
+  1692→  font-family: var(--font-mono);
+  1693→  font-size: 11px;
+  1694→  color: var(--text-dim);
+  1695→  margin-top: 8px;
+  1696→}
+  1697→```
+  1698→
+  1699→```html
+  1700→<figure class="illus">
+  1701→  <img src="data:image/png;base64,..." alt="Descriptive alt text">
+  1702→  <figcaption>How the message queue routes events between services</figcaption>
+  1703→</figure>
+  1704→```
+  1705→
+  1706→Generate with `--aspect-ratio 1:1` or `--aspect-ratio 4:3` for inline illustrations.
+  1707→
+  1708→### Side Accent
+  1709→
+  1710→Small image floated beside a section. Use when the illustration supports but doesn't dominate the content.
+  1711→
+  1712→```css
+  1713→.accent-img {
+  1714→  float: right;
+  1715→  max-width: 200px;
+  1716→  margin: 0 0 16px 24px;
+  1717→  border-radius: 10px;
+  1718→  border: 1px solid var(--border);
+  1719→  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  1720→}
+  1721→
+  1722→@media (max-width: 768px) {
+  1723→  .accent-img {
+  1724→    float: none;
+  1725→    max-width: 100%;
+  1726→    margin: 0 0 16px 0;
+  1727→  }
+  1728→}
+  1729→```
+  1730→
+  1731→```html
+  1732→<img class="accent-img" src="data:image/png;base64,..." alt="Descriptive alt text">
+  1733→```
+  1734→

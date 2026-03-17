@@ -1,0 +1,29 @@
+# CLAUDE.md
+
+## Project Overview
+
+Book manuscript repo for "Avoid Misgovernance in Corporates" by Abhik Pal. A practical guide to corporate governance.
+
+## Structure
+
+- `original_draft.md` — Full book draft (~649KB). 5 sections, 30 parts, multiple chapters each.
+- `chapters/` — Individual chapter markdown files split by section (`00_frontmatter/`, `01_leadership/`, `02_people/`, `03_operations/`, `04_support_services/`, `05_articles/`). `chapters/index.md` defines chapter ordering.
+- `generate_pdf.py` — Converts chapter markdown files into `book.pdf` using markdown2 + WeasyPrint.
+- `split_manuscript.py` — Splits `original_draft.md` into individual chapter files.
+
+## Working with the Manuscript
+
+- Sections are delimited by `**SECTION N – TITLE**`, parts by `**PART N: Title**`.
+- Chapter naming convention: `Chapter: The "X" syndrome` for most chapters.
+- When editing, use targeted edits rather than full rewrites.
+
+## Development
+
+Uses `uv` for dependency management and virtual environment:
+
+```sh
+uv sync              # Install dependencies and create .venv
+uv run generate_pdf.py  # Generate book.pdf from chapter files
+```
+
+Dependencies: `markdown2`, `weasyprint` (see `pyproject.toml`).
