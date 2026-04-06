@@ -21,6 +21,9 @@ require("lazy").setup({
 
     -- Import the Python extras - this gives you the foundation
     { import = "lazyvim.plugins.extras.lang.python" },
+    { import = "lazyvim.plugins.extras.lang.docker" },
+    { import = "lazyvim.plugins.extras.lang.markdown" },
+    { import = "lazyvim.plugins.extras.lang.json" },
 
     -- import/override with your plugins
     { import = "plugins" },
