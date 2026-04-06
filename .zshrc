@@ -91,11 +91,11 @@ source $ZSH/oh-my-zsh.sh
 # export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='nvim'
-# fi
+if [[ -n $SSH_CONNECTION ]]; then
+  export EDITOR='vim'
+else
+  export EDITOR='nvim'
+fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
@@ -131,7 +131,7 @@ if [ -f '/Users/sagarpal/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then 
 eval "$(fzf --zsh)"
 
 # eza alias for ll 
-alias ll="eza --color=always --long --header --tree --git --icons=always --no-user -a --level=0"
+alias ll="eza --color=always --long --header --tree --git --icons=always --no-user -a --level=1"
 
 # adding environment variable to always invoke ipdb instead of pdb debugger
 export PYTHONBREAKPOINT=ipdb.set_trace
@@ -205,3 +205,13 @@ eval "$(zoxide init zsh)"
 
 alias cd="z"
 
+# for Yazi file navigator
+function ff() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	command yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ "$cwd" != "$PWD" ] && [ -d "$cwd" ] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}
+
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
