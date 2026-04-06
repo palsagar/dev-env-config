@@ -23,8 +23,8 @@ return {
             },
           },
         },
-        -- Ruff LSP: Fast linting and formatting
-        ruff_lsp = {
+        -- Ruff language server: fast linting and code actions
+        ruff = {
           init_options = {
             settings = {
               -- Enable linting
@@ -36,47 +36,18 @@ return {
               organizeImports = true,
             },
           },
-          -- Disable capabilities that Pyright handles better
-          capabilities = {
-            hoverProvider = false,
-            definitionProvider = false,
-            documentSymbolProvider = false,
-            -- Disable LSP formatting - we use conform.nvim with ruff_format instead
-            documentFormattingProvider = false,
-            documentRangeFormattingProvider = false,
-          },
         },
         -- ty: Modern type checking from Astral
         ty = {
           cmd = { "ty", "server" },
-          filetypes = { "python" },
-          root_dir = function(fname)
-            return require("lspconfig.util").root_pattern("pyproject.toml", "ty.toml", ".git")(fname)
-              or require("lspconfig.util").path.dirname(fname)
-          end,
-          single_file_support = true,
         },
       },
-      -- Setup function to handle ty LSP (may not be in nvim-lspconfig by default)
+      -- Keep Pyright hover as the default hover provider
       setup = {
-        ty = function(_, opts)
-          local lspconfig = require("lspconfig")
-          -- Register ty if not already registered
-          if not lspconfig.configs.ty then
-            lspconfig.configs.ty = {
-              default_config = {
-                cmd = { "ty", "server" },
-                filetypes = { "python" },
-                root_dir = function(fname)
-                  return lspconfig.util.root_pattern("pyproject.toml", "ty.toml", ".git")(fname)
-                    or lspconfig.util.path.dirname(fname)
-                end,
-                single_file_support = true,
-              },
-            }
-          end
-          lspconfig.ty.setup(opts)
-          return true
+        ruff = function()
+          Snacks.util.lsp.on({ name = "ruff" }, function(_, client)
+            client.server_capabilities.hoverProvider = false
+          end)
         end,
       },
     },
@@ -84,12 +55,12 @@ return {
 
   -- Ensure Mason installs all required tools
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
       vim.list_extend(opts.ensure_installed, {
         "pyright", -- Python LSP for IDE features
-        "ruff-lsp", -- Ruff LSP server for linting and formatting
+        "ruff", -- Ruff language server for linting and code actions
         "ty", -- Type checker from Astral
       })
     end,
@@ -100,22 +71,8 @@ return {
     "stevearc/conform.nvim",
     opts = {
       formatters_by_ft = {
-        python = { "ruff_format" },
+        python = { "ruff_fix", "ruff_format" },
       },
-      format_on_save = function(bufnr)
-        -- Only format Python files with Ruff
-        if vim.bo[bufnr].filetype == "python" then
-          return {
-            timeout_ms = 3000,
-            lsp_fallback = false, -- Don't fallback to LSP formatting for Python
-          }
-        end
-        -- For other filetypes, use default behavior
-        return {
-          timeout_ms = 3000,
-          lsp_fallback = true,
-        }
-      end,
     },
   },
 
@@ -123,16 +80,9 @@ return {
   {
     "mfussenegger/nvim-lint",
     opts = function(_, opts)
-      -- Remove ruff from linters_by_ft if present, Ruff LSP handles linting
-      if opts.linters_by_ft and opts.linters_by_ft.python then
-        opts.linters_by_ft.python = vim.tbl_filter(function(linter)
-          return linter ~= "ruff"
-        end, opts.linters_by_ft.python)
-        -- If empty, remove the entry
-        if #opts.linters_by_ft.python == 0 then
-          opts.linters_by_ft.python = nil
-        end
-      end
+      opts.linters_by_ft = opts.linters_by_ft or {}
+      -- Ruff LSP provides Python diagnostics; avoid duplicate lints
+      opts.linters_by_ft.python = nil
     end,
   },
 

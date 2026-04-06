@@ -32,10 +32,8 @@ vim.api.nvim_create_autocmd("FileType", {
 
     -- Format with Ruff
     map("n", "<leader>cf", function()
-      vim.lsp.buf.format({
-        filter = function(client)
-          return client.name == "ruff_lsp"
-        end,
+      require("conform").format({
+        lsp_format = "never",
       })
     end, "Format with Ruff")
   end,
