@@ -16,3 +16,10 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
   desc = "Set Python-specific options",
 })
+
+-- Disable unused remote-plugin providers. Nothing in this config uses them;
+-- silences checkhealth warnings (missing pynvim, neovim-node, ruby, perl).
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_node_provider = 0
