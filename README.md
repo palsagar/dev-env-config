@@ -17,6 +17,8 @@ Personal development environment configurations for macOS. This repository conta
 
 ### 🔧 Development Tools
 - **Neovim** (`.config/`) - Text editor configuration
+- **Zed** (`zed/`) - Editor preferences and LazyVim-style keybindings
+  - Tracks `settings.json` and `keymap.json`; excludes local permissions and generated state
 - **Cursor** (`.cursor/`) - AI-powered IDE settings
   - Custom rules and skills
   - Editor preferences (`settings.json`)
