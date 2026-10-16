@@ -4,21 +4,20 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        -- Pyright: IDE features (completions, go-to-definition, hover) with type checking disabled
+        -- Pyright: IDE features only (hover, completions, go-to-def).
+        -- ty + ruff own diagnostics; swallow pyright's publishDiagnostics to clear noise.
         pyright = {
+          handlers = {
+            ["textDocument/publishDiagnostics"] = function() end,
+          },
           settings = {
             python = {
               analysis = {
-                -- Disable type checking since we use ty for that
                 typeCheckingMode = "off",
-                -- Enable auto-import completions
                 autoImportCompletions = true,
-                -- Show parameter hints
                 autoSearchPaths = true,
-                -- Use library code for completions
                 useLibraryCodeForTypes = true,
-                -- Diagnostic mode
-                diagnosticMode = "workspace",
+                diagnosticMode = "openFilesOnly",
               },
             },
           },
