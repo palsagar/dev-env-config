@@ -34,6 +34,17 @@ vim.api.nvim_create_autocmd("TextChanged", {
   desc = "Debounced autosave on TextChanged (no formatting)",
 })
 
+-- LazyVim turns on spell checking in markdown, text and git commit buffers. It underlines
+-- project names and code words. Replace its autocmd (same group name) to keep only the wrapping.
+-- Press Space+u+s to turn spell checking on in the current buffer when proofreading.
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("lazyvim_wrap_spell", { clear = true }),
+  pattern = { "text", "plaintex", "typst", "gitcommit", "markdown" },
+  callback = function()
+    vim.opt_local.wrap = true
+  end,
+})
+
 -- Open the explorer sidebar on startup, like Zed's project panel, so Ctrl+h can reach it.
 -- Focus stays in the editor. Skipped for git commit/rebase messages ($EDITOR is nvim)
 -- and when `nvim <dir>` already opened it.
