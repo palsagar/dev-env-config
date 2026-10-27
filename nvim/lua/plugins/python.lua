@@ -84,38 +84,4 @@ return {
       opts.linters_by_ft.python = nil
     end,
   },
-
-  -- Virtual environment selector
-  {
-    "linux-cultist/venv-selector.nvim",
-    dependencies = {
-      "neovim/nvim-lspconfig",
-      "nvim-telescope/telescope.nvim",
-    },
-    opts = {
-      -- Auto-detect venv in common locations
-      name = {
-        "venv",
-        ".venv",
-        "env",
-        ".env",
-      },
-      -- Search in parent directories
-      parents = 2,
-    },
-    keys = {
-      {
-        "<leader>cv",
-        function()
-          require("venv-selector").open()
-        end,
-        desc = "Select Python venv",
-      },
-    },
-  },
-
-  -- Explicitly disable debugging plugins to avoid debugpy errors
-  { "mfussenegger/nvim-dap", enabled = false },
-  { "mfussenegger/nvim-dap-python", enabled = false },
-  { "mfussenegger/nvim-dap-ui", enabled = false },
 }

@@ -31,12 +31,31 @@ return {
     end,
   },
 
-  -- LaTeX math rendering needs the tree-sitter CLI (for the latex grammar) plus
-  -- a converter (utftex/latex2text) — none installed. Disable to keep things quiet.
+  -- Richer styling than LazyVim's plain defaults.
   {
     "MeanderingProgrammer/render-markdown.nvim",
     opts = {
+      -- Keep rendering in every mode, including insert (the cursor line still shows raw text).
+      render_modes = true,
+      heading = { icons = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " } },
+      checkbox = { enabled = true },
+      pipe_table = { preset = "round" },
+      -- Math is drawn as images by Snacks.image below; this text-based version would need
+      -- an extra converter (utftex/latex2text) and would render the same math twice.
       latex = { enabled = false },
     },
+  },
+
+  -- Draw images and LaTeX math inside the buffer (Kitty graphics protocol, e.g. Ghostty).
+  -- Uses ImageMagick for images and tectonic/pdflatex for math.
+  {
+    "folke/snacks.nvim",
+    opts = { image = { enabled = true } },
+  },
+
+  -- Snacks.image finds $math$ in markdown through the latex treesitter parser.
+  {
+    "nvim-treesitter/nvim-treesitter",
+    opts = { ensure_installed = { "latex" } },
   },
 }

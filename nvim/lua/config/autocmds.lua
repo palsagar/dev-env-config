@@ -33,3 +33,22 @@ vim.api.nvim_create_autocmd("TextChanged", {
   end,
   desc = "Debounced autosave on TextChanged (no formatting)",
 })
+
+-- Open the explorer sidebar on startup, like Zed's project panel, so Ctrl+h can reach it.
+-- Focus stays in the editor. Skipped for git commit/rebase messages ($EDITOR is nvim)
+-- and when `nvim <dir>` already opened it.
+local function open_explorer()
+  if
+    not vim.tbl_contains({ "gitcommit", "gitrebase" }, vim.bo.filetype)
+    and not Snacks.picker.get({ source = "explorer" })[1]
+  then
+    Snacks.explorer({ cwd = LazyVim.root(), enter = false })
+  end
+end
+
+-- LazyVim loads this file before startup ends when nvim opens a file, and after it otherwise.
+if vim.v.vim_did_enter == 1 then
+  open_explorer()
+else
+  vim.api.nvim_create_autocmd("VimEnter", { once = true, callback = open_explorer })
+end
