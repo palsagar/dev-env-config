@@ -3,39 +3,15 @@
 -- Add any additional keymaps here
 
 -- Python-specific keymaps
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "python",
-  callback = function()
-    local function map(mode, lhs, rhs, desc)
-      vim.keymap.set(mode, lhs, rhs, { buffer = true, desc = desc })
-    end
+-- Snacks.keymap with `ft` also covers Python buffers opened before this file loads (on VeryLazy).
+-- Space+c+f (format) comes from LazyVim and already runs ruff_fix + ruff_format via conform.
 
-    -- Ruff: Fix all issues
-    map("n", "<leader>rf", function()
-      vim.lsp.buf.code_action({
-        filter = function(action)
-          return action.title:match("Fix all") or action.title:match("Ruff")
-        end,
-        apply = true,
-      })
-    end, "Ruff: Fix all")
+-- Ruff: Fix all issues
+Snacks.keymap.set("n", "<leader>rf", function()
+  vim.lsp.buf.code_action({ context = { only = { "source.fixAll.ruff" } }, apply = true })
+end, { ft = "python", desc = "Ruff: Fix all" })
 
-    -- Ruff: Organize imports
-    map("n", "<leader>ro", function()
-      vim.lsp.buf.code_action({
-        filter = function(action)
-          return action.title:match("Organize imports") or action.title:match("Import")
-        end,
-        apply = true,
-      })
-    end, "Ruff: Organize imports")
-
-    -- Format with Ruff
-    map("n", "<leader>cf", function()
-      require("conform").format({
-        lsp_format = "never",
-      })
-    end, "Format with Ruff")
-  end,
-  desc = "Set Python keymaps",
-})
+-- Ruff: Organize imports
+Snacks.keymap.set("n", "<leader>ro", function()
+  vim.lsp.buf.code_action({ context = { only = { "source.organizeImports.ruff" } }, apply = true })
+end, { ft = "python", desc = "Ruff: Organize imports" })
