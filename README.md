@@ -11,6 +11,9 @@ Personal development environment configurations for macOS. This repository conta
   - FZF integration with `fd` for fuzzy finding
   - Zoxide for smarter directory navigation
   - Yazi integration for directory-aware file navigation with `ff`
+- **cmux** (`cmux/`) - Terminal and agent workspace app built on Ghostty
+  - Vim-style pane focus with `Ctrl+h/j/k/l`, and splits with `Ctrl+\` and `Ctrl+-`
+  - Tracks `cmux.json` only; sessions, window layout and account state stay local
 - **WezTerm** (`.wezterm.lua`) - Terminal emulator configuration
   - Catppuccin Frappé color scheme
   - MesloLGS Nerd Font Mono at 17pt
@@ -53,6 +56,7 @@ Configurations are deployed as copies rather than live symlinks:
 
 - **Neovim**: `nvim/` maps to `~/.config/nvim/`.
 - **Zed**: `zed/settings.json` and `zed/keymap.json` map to `~/.config/zed/`.
+- **cmux**: `cmux/cmux.json` maps to `~/.config/cmux/cmux.json`. After copying it, run `cmux reload-config`; no restart is needed. Make shortcut changes in this file, not in the cmux Settings window: the Settings window saves them in macOS app preferences, which this repository does not track.
 - **Home-directory files**: `.zshrc`, `.wezterm.lua`, `.tmux.conf`, `.tmux/`, and `.cursor/` map to their corresponding paths in `$HOME`.
 
 Zed sandbox permissions, prompt databases, and other generated state remain local to each machine.

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/manaflow-ai/cmux/main/web/data/cmux.schema.json",
+  "schemaVersion": 1,
+  "shortcuts": {
+    "bindings": {
+      "focusLeft": "ctrl+h",
+      "focusDown": "ctrl+j",
+      "focusUp": "ctrl+k",
+      "focusRight": "ctrl+l",
+      "splitRight": "ctrl+\\",
+      "splitDown": "ctrl+-",
+      "toggleSplitZoom": "cmd+ctrl+m",
+      "nextSurface": "ctrl+tab",
+      "prevSurface": "ctrl+shift+tab",
+      "moveSurfaceLeft": "cmd+ctrl+opt+left",
+      "moveSurfaceRight": "cmd+ctrl+opt+right",
+      "renameTab": "cmd+opt+r",
+      "nextSidebarTab": "ctrl+]",
+      "prevSidebarTab": "ctrl+[",
+      "moveWorkspaceUp": "cmd+ctrl+opt+up",
+      "moveWorkspaceDown": "cmd+ctrl+opt+down",
+      "commandPaletteNext": null,
+      "commandPalettePrevious": null,
+      "newWorkspaceGroup": null,
+      "groupSelectedWorkspaces": null
+    }
+  }
+}
