@@ -21,6 +21,8 @@ Personal development environment configurations for macOS. This repository conta
   - Python, Docker, Markdown, and JSON language extras
   - Python tooling with Pyright, Ruff, and ty
   - Gruvbox theme, debounced autosave, and tmux-aware navigation
+  - Zed-style file explorer: opens on startup, and `Space e` moves focus between it and the editor
+  - Rich Markdown rendering: styled headings, checkboxes and tables, plus images, LaTeX math and Mermaid diagrams drawn in the buffer
 - **Zed** (`zed/`) - Editor preferences and LazyVim-style keybindings
   - Vim mode, Gruvbox themes, autosave, and relative line numbers
   - Tracks `settings.json` and `keymap.json`; excludes local permissions and generated state
@@ -54,6 +56,38 @@ Configurations are deployed as copies rather than live symlinks:
 - **Home-directory files**: `.zshrc`, `.wezterm.lua`, `.tmux.conf`, `.tmux/`, and `.cursor/` map to their corresponding paths in `$HOME`.
 
 Zed sandbox permissions, prompt databases, and other generated state remain local to each machine.
+
+## 🛠️ Neovim Setup on a New Mac
+
+Neovim needs some system tools besides the config files. Mason installs the language servers and formatters by itself on the first launch. `scripts/setup-nvim.sh` installs the rest with Homebrew and npm:
+
+| Tool | Used for |
+| --- | --- |
+| `neovim` | The editor |
+| `ripgrep`, `fd` | Text search and file finding |
+| `lazygit` | Git UI (`Space g g`) |
+| `node` | Mason's npm-based language servers, and mermaid-cli |
+| `imagemagick`, `ghostscript` | Images and PDF pages in Markdown |
+| `tectonic` | LaTeX math in Markdown |
+| `@mermaid-js/mermaid-cli` (npm) | Mermaid diagrams in Markdown |
+| `font-meslo-lg-nerd-font` | Icons |
+
+The script skips every tool that is already installed, so you can run it again at any time.
+
+1. Install [Homebrew](https://brew.sh) and the Xcode Command Line Tools (`xcode-select --install`). The Command Line Tools provide the C compiler for treesitter parsers.
+2. Run the setup script from the repository root:
+   ```sh
+   ./scripts/setup-nvim.sh
+   ```
+3. Copy the config. This keeps a backup of any existing config:
+   ```sh
+   [ -d ~/.config/nvim ] && mv ~/.config/nvim ~/.config/nvim.bak-$(date +%F)
+   cp -R nvim ~/.config/nvim
+   ```
+4. Start `nvim`. lazy.nvim installs the plugins at the versions in `lazy-lock.json`, and Mason installs the language servers. Wait until both finish, then restart `nvim`.
+5. Run `:checkhealth snacks`. The `Snacks.image` section must report that images, LaTeX math and Mermaid diagrams are supported.
+
+Images, math and diagrams need a terminal that supports the Kitty graphics protocol, such as Ghostty, kitty or WezTerm. In other terminals, Markdown still renders, but these parts show as plain text. Set the terminal font to "MesloLGS Nerd Font Mono" so that icons display correctly.
 
 ## References
 - [Zsh setup](https://www.josean.com/posts/terminal-setup)
