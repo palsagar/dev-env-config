@@ -1,0 +1,32 @@
+# Runs only when data_disk_device is set (see site.yml).
+# community.general.filesystem never reformats a disk that already has a filesystem.
+- name: Create ext4 filesystem on the data disk if it has none
+  community.general.filesystem:
+    dev: "{{ data_disk_device }}"
+    fstype: ext4
+
+- name: Mount the data disk
+  ansible.posix.mount:
+    src: "{{ data_disk_device }}"
+    path: "{{ data_disk_mount }}"
+    fstype: ext4
+    opts: defaults,discard,nofail
+    state: mounted
+
+- name: Create cache directories on the data disk
+  ansible.builtin.file:
+    path: "{{ data_disk_mount }}/{{ item }}"
+    state: directory
+    owner: "{{ dev_user }}"
+    mode: "0755"
+  loop: [cache/huggingface, cache/uv]
+
+# /etc/environment is read by PAM for every login, whatever the shell.
+- name: Point HF and uv caches at the data disk
+  ansible.builtin.lineinfile:
+    path: /etc/environment
+    regexp: "^{{ item.key }}="
+    line: "{{ item.key }}={{ item.value }}"
+  loop:
+    - { key: HF_HOME, value: "{{ data_disk_mount }}/cache/huggingface" }
+    - { key: UV_CACHE_DIR, value: "{{ data_disk_mount }}/cache/uv" }

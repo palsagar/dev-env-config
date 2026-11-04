@@ -1,0 +1,60 @@
+# Distribution Neovim packages are too old for this LazyVim config. Install the
+# official release build instead.
+- name: Download Neovim {{ neovim_version }}
+  ansible.builtin.unarchive:
+    src: "https://github.com/neovim/neovim/releases/download/v{{ neovim_version }}/nvim-linux-{{ arch.nvim }}.tar.gz"
+    dest: /opt
+    remote_src: true
+    creates: "/opt/nvim-linux-{{ arch.nvim }}-{{ neovim_version }}/bin/nvim"
+    extra_opts: ["--transform=s|^nvim-linux-{{ arch.nvim }}|nvim-linux-{{ arch.nvim }}-{{ neovim_version }}|"]
+  become: true
+
+- name: Link nvim into /usr/local/bin
+  ansible.builtin.file:
+    src: "/opt/nvim-linux-{{ arch.nvim }}-{{ neovim_version }}/bin/nvim"
+    dest: /usr/local/bin/nvim
+    state: link
+    force: true
+  become: true
+
+# The repo copy is the source of truth; it replaces ~/.config/nvim on every run.
+- name: Install Neovim config
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/dotfiles/nvim/"
+    dest: "{{ dev_home }}/.config/nvim/"
+    mode: preserve
+  register: nvim_config
+
+# init.lua would clone lazy.nvim from its `stable` branch. Clone it at the
+# locked commit first, so a single `Lazy! restore` ends at the locked versions.
+- name: Clone lazy.nvim at the commit in lazy-lock.json
+  ansible.builtin.git:
+    repo: https://github.com/folke/lazy.nvim.git
+    dest: "{{ dev_home }}/.local/share/nvim/lazy/lazy.nvim"
+    version: "{{ (lookup('ansible.builtin.file', playbook_dir ~ '/dotfiles/nvim/lazy-lock.json') | from_json)['lazy.nvim'].commit }}"
+    update: false
+
+- name: Check whether plugins are installed
+  ansible.builtin.stat:
+    path: "{{ dev_home }}/.local/share/nvim/lazy/LazyVim"
+  register: lazyvim_dir
+
+# `Lazy! restore` checks out the exact plugin commits in lazy-lock.json.
+# On a fresh install, lazy.nvim clones missing plugins at startup at their
+# newest commit and writes those commits into lazy-lock.json. So: run once to
+# install, put the repo's lock file back, run again to check out locked commits.
+- name: Install plugins at the versions in lazy-lock.json
+  ansible.builtin.shell: |
+    set -e
+    lock="{{ dev_home }}/.config/nvim/lazy-lock.json"
+    saved=$(mktemp)
+    cp "$lock" "$saved"
+    nvim --headless "+Lazy! restore" +qa
+    cp "$saved" "$lock"
+    nvim --headless "+Lazy! restore" +qa
+    diff -q "$saved" "$lock"
+    rm -f "$saved"
+  args:
+    executable: /bin/bash
+  when: nvim_config is changed or not lazyvim_dir.stat.exists
+  changed_when: true

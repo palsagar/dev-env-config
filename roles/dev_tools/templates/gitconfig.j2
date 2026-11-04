@@ -1,0 +1,21 @@
+# Managed by palsagar/dev-env-config. Local edits are overwritten on the next run.
+# Commit signing is off: the GPG key lives only on the Mac.
+[user]
+	name = {{ git_user_name }}
+	email = {{ git_user_email }}
+[core]
+	editor = nvim
+[color]
+	ui = auto
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+# GitHub auth goes through `gh auth login`; no token is stored in plain text.
+[credential "https://github.com"]
+	helper =
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/usr/bin/gh auth git-credential

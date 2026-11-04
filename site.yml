@@ -1,0 +1,69 @@
+- name: Configure server
+  hosts: all
+  gather_facts: false
+  # Facts are gathered as the SSH user so dev_user/dev_home point at you, not root.
+  pre_tasks:
+    # Tagged 'always' so these still run with --tags.
+    - name: Prepare the host and detect the target user and OS
+      tags: [always]
+      block:
+        # Bare images have neither, and become needs sudo even when connected as root.
+        - name: Install python3 and sudo on bare images
+          ansible.builtin.raw: |
+            command -v python3 >/dev/null && command -v sudo >/dev/null && exit 0
+            maybe_sudo=""
+            [ "$(id -u)" = 0 ] || maybe_sudo=sudo
+            $maybe_sudo apt-get update -qq && $maybe_sudo apt-get install -y -qq python3 sudo
+          changed_when: false
+
+        - name: Gather facts
+          ansible.builtin.setup:
+
+        - name: Check the target OS
+          ansible.builtin.assert:
+            that: >-
+              (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_version'] == '24.04')
+              or (ansible_facts['distribution'] == 'Debian' and ansible_facts['distribution_major_version'] == '13')
+            fail_msg: >-
+              This playbook supports Ubuntu 24.04 and Debian 13 only
+              (found {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}).
+
+        - name: Record the user to configure
+          ansible.builtin.set_fact:
+            dev_user: "{{ ansible_facts['user_id'] }}"
+            dev_home: "{{ ansible_facts['user_dir'] }}"
+
+        # GCP OS Login users exist via NSS but not in /etc/passwd, so chsh cannot change their shell.
+        - name: Check whether the user is a local account
+          ansible.builtin.command: grep -q "^{{ dev_user }}:" /etc/passwd
+          register: local_user_check
+          changed_when: false
+          failed_when: local_user_check.rc > 1
+
+        - name: Record whether the user is local
+          ansible.builtin.set_fact:
+            dev_user_is_local: "{{ local_user_check.rc == 0 }}"
+
+  roles:
+    # System layer (root)
+    - { role: base, become: true, tags: [base] }
+    - { role: data_disk, become: true, tags: [data_disk], when: data_disk_device | length > 0 }
+    - { role: cli_tools, become: true, tags: [cli_tools] }
+    - { role: docker, become: true, tags: [docker] }
+    - { role: gcloud, become: true, tags: [gcloud], when: gcloud_enabled | bool }
+    - { role: node, become: true, tags: [node] }
+    - { role: extras, become: true, tags: [extras] }
+    # User layer (you)
+    - { role: dev_tools, tags: [dev_tools] }
+    - { role: shell, tags: [shell] }
+    - { role: neovim, tags: [neovim] }
+
+  post_tasks:
+    # The docker-ce install rewrites /etc/default/locale, so set it after all apt activity.
+    - name: Set the default locale
+      ansible.builtin.copy:
+        dest: /etc/default/locale
+        content: "LANG=en_US.UTF-8\n"
+        mode: "0644"
+      become: true
+      tags: [base, docker]

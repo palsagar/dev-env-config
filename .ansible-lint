@@ -1,0 +1,10 @@
+profile: production
+exclude_paths:
+  - dotfiles/
+  - mac/
+  - docs/
+  - .collections/
+  - .venv/
+  - .github/
+skip_list:
+  - var-naming[no-role-prefix] # short shared var names (dev_user, arch) read better here

@@ -1,0 +1,24 @@
+- name: Install Google Cloud apt key
+  ansible.builtin.get_url:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    dest: /etc/apt/keyrings/cloud.google.asc
+    mode: "0644"
+
+- name: Add Google Cloud apt repositories
+  ansible.builtin.deb822_repository:
+    name: "{{ item.name }}"
+    uris: https://packages.cloud.google.com/apt
+    suites: "{{ item.suite }}"
+    components: main
+    signed_by: /etc/apt/keyrings/cloud.google.asc
+  loop:
+    - { name: google-cloud-sdk, suite: cloud-sdk }
+    - { name: gcsfuse, suite: "gcsfuse-{{ ansible_facts['distribution_release'] }}" }
+
+# Ubuntu GCE images also ship gcloud as a snap; /usr/bin comes first in PATH, so this one wins.
+- name: Install gcloud CLI and gcsfuse
+  ansible.builtin.apt:
+    update_cache: true
+    name:
+      - google-cloud-cli
+      - gcsfuse

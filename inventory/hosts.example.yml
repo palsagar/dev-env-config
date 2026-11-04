@@ -1,0 +1,10 @@
+# Copy to inventory/hosts.yml, which git ignores, so server addresses stay out of this public repo.
+# A host name must match a `Host` entry in ~/.ssh/config, or set ansible_host and ansible_user here.
+all:
+  hosts:
+    my-server:
+      ansible_host: 203.0.113.10
+      ansible_user: root
+      # data_disk_device: /dev/disk/by-id/my-data-disk   # optional, see group_vars/all.yml
+      # extras_texlive: true
+      # gcloud_enabled: true

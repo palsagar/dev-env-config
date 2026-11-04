@@ -1,0 +1,65 @@
+# Tools that are missing or too old in distribution apt repositories. Each version is unpacked
+# into /opt/<tool>-<version> and linked into /usr/local/bin, so bumping the
+# version in group_vars installs the new one and switches the link.
+- name: Create install directories
+  ansible.builtin.file:
+    path: "/opt/{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "lazygit-{{ lazygit_version }}"
+    - "fzf-{{ fzf_version }}"
+    - "yazi-{{ yazi_version }}"
+    - "tree-sitter-{{ tree_sitter_version }}"
+
+- name: Download and unpack release archives
+  ansible.builtin.unarchive:
+    src: "{{ item.url }}"
+    dest: "/opt/{{ item.dir }}"
+    remote_src: true
+    creates: "/opt/{{ item.dir }}/{{ item.bin }}"
+  loop:
+    - dir: "lazygit-{{ lazygit_version }}"
+      bin: lazygit
+      url: "https://github.com/jesseduffield/lazygit/releases/download/v{{ lazygit_version }}/lazygit_{{ lazygit_version }}_linux_{{ arch.lazygit }}.tar.gz"
+    - dir: "fzf-{{ fzf_version }}"
+      bin: fzf
+      url: "https://github.com/junegunn/fzf/releases/download/v{{ fzf_version }}/fzf-{{ fzf_version }}-linux_{{ arch.fzf }}.tar.gz"
+    - dir: "yazi-{{ yazi_version }}"
+      bin: "yazi-{{ arch.yazi }}-unknown-linux-gnu/yazi"
+      url: "https://github.com/sxyazi/yazi/releases/download/v{{ yazi_version }}/yazi-{{ arch.yazi }}-unknown-linux-gnu.zip"
+    - dir: "tree-sitter-{{ tree_sitter_version }}"
+      bin: tree-sitter
+      url: "https://github.com/tree-sitter/tree-sitter/releases/download/v{{ tree_sitter_version }}/tree-sitter-cli-linux-{{ arch.tree_sitter }}.zip"
+
+- name: Link binaries into /usr/local/bin
+  ansible.builtin.file:
+    src: "/opt/{{ item.src }}"
+    dest: "/usr/local/bin/{{ item.name }}"
+    state: link
+    force: true
+  loop:
+    - { name: lazygit, src: "lazygit-{{ lazygit_version }}/lazygit" }
+    - { name: fzf, src: "fzf-{{ fzf_version }}/fzf" }
+    - { name: yazi, src: "yazi-{{ yazi_version }}/yazi-{{ arch.yazi }}-unknown-linux-gnu/yazi" }
+    - { name: ya, src: "yazi-{{ yazi_version }}/yazi-{{ arch.yazi }}-unknown-linux-gnu/ya" }
+    - { name: tree-sitter, src: "tree-sitter-{{ tree_sitter_version }}/tree-sitter" }
+
+- name: Install GitHub CLI apt key
+  ansible.builtin.get_url:
+    url: https://cli.github.com/packages/githubcli-archive-keyring.gpg
+    dest: /etc/apt/keyrings/githubcli.gpg
+    mode: "0644"
+
+- name: Add GitHub CLI apt repository
+  ansible.builtin.deb822_repository:
+    name: github-cli
+    uris: https://cli.github.com/packages
+    suites: stable
+    components: main
+    signed_by: /etc/apt/keyrings/githubcli.gpg
+
+- name: Install GitHub CLI
+  ansible.builtin.apt:
+    name: gh
+    update_cache: true
