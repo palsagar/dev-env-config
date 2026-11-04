@@ -1,0 +1,5 @@
+.venv/
+.collections/
+*.retry
+__pycache__/
+inventory/hosts.yml

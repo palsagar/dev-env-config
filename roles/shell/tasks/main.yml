@@ -1,0 +1,71 @@
+# ---- zsh + oh-my-zsh + powerlevel10k -----------------------------------------
+- name: Clone oh-my-zsh, its plugins and powerlevel10k  # noqa: latest[git] - cloned once, never updated
+  ansible.builtin.git:
+    repo: "{{ item.repo }}"
+    dest: "{{ dev_home }}/{{ item.dest }}"
+    depth: 1
+    update: false
+  loop:
+    - { repo: https://github.com/ohmyzsh/ohmyzsh.git, dest: .oh-my-zsh }
+    - { repo: https://github.com/zsh-users/zsh-autosuggestions.git, dest: .oh-my-zsh/custom/plugins/zsh-autosuggestions }
+    - { repo: https://github.com/zsh-users/zsh-syntax-highlighting.git, dest: .oh-my-zsh/custom/plugins/zsh-syntax-highlighting }
+    - { repo: https://github.com/romkatv/powerlevel10k.git, dest: .oh-my-zsh/custom/themes/powerlevel10k }
+
+- name: Write ~/.zshrc
+  ansible.builtin.template:
+    src: zshrc.j2
+    dest: "{{ dev_home }}/.zshrc"
+    mode: "0644"
+
+- name: Install ~/.p10k.zsh
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/dotfiles/p10k.zsh"
+    dest: "{{ dev_home }}/.p10k.zsh"
+    mode: "0644"
+
+- name: Make zsh the login shell (local account)
+  ansible.builtin.user:
+    name: "{{ dev_user }}"
+    shell: /usr/bin/zsh
+  become: true
+  when: dev_user_is_local
+
+# OS Login accounts get their shell from GCP, so switch to zsh from bash instead.
+- name: Start zsh from bash logins (OS Login account)
+  ansible.builtin.blockinfile:
+    path: "{{ dev_home }}/.bash_profile"
+    create: true
+    mode: "0644"
+    marker: "# {mark} dev-env-config: switch to zsh"
+    block: |
+      [ -f ~/.profile ] && . ~/.profile
+      if [ -t 1 ] && [ -x /usr/bin/zsh ]; then exec /usr/bin/zsh -l; fi
+  when: not dev_user_is_local
+
+# ---- tmux --------------------------------------------------------------------
+- name: Install ~/.tmux.conf
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/dotfiles/tmux.conf"
+    dest: "{{ dev_home }}/.tmux.conf"
+    mode: "0644"
+
+- name: Clone tmux plugin manager (TPM)  # noqa: latest[git] - cloned once, never updated
+  ansible.builtin.git:
+    repo: https://github.com/tmux-plugins/tpm.git
+    dest: "{{ dev_home }}/.tmux/plugins/tpm"
+    depth: 1
+    update: false
+
+# TPM needs a running tmux server. TMUX_TMPDIR gives it a private socket, so
+# any tmux sessions you already have are not touched.
+- name: Install tmux plugins
+  ansible.builtin.shell: |
+    export TMUX_TMPDIR=$(mktemp -d)
+    tmux new-session -d -s dev-env-install
+    out=$(~/.tmux/plugins/tpm/bin/install_plugins 2>&1); rc=$?
+    tmux kill-server; rm -rf "$TMUX_TMPDIR"
+    echo "$out"; exit $rc
+  args:
+    executable: /bin/bash
+  register: tpm_install
+  changed_when: "'download success' in tpm_install.stdout"

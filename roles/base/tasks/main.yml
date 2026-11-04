@@ -1,0 +1,89 @@
+- name: Install base packages
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+    name:
+      # Core utilities
+      - ca-certificates
+      - curl
+      - wget
+      - gnupg
+      - python3-debian # needed by ansible deb822_repository
+      - git
+      - git-lfs
+      - unzip
+      - zip
+      - xz-utils
+      - tree
+      - rsync
+      - jq
+      - htop
+      - btop
+      - ncdu
+      - tmux
+      - vim
+      - zsh
+      - ripgrep
+      - fd-find
+      - bat
+      - eza
+      - zoxide
+      - imagemagick # Neovim snacks.image
+      - net-tools
+      - netcat-openbsd
+      - socat
+      - tcpdump
+      - inotify-tools
+      - dnsutils # dig, used by the fzf ssh preview
+      - locales
+      - unattended-upgrades
+      # Build toolchain and common headers
+      - build-essential
+      - cmake
+      - gdb
+      - pkg-config
+      - protobuf-compiler
+      - python3-venv
+      - python3-pip
+      - libssl-dev
+      - libffi-dev
+      - zlib1g-dev
+      - libbz2-dev
+      - libreadline-dev
+      - libsqlite3-dev
+      - liblzma-dev
+      - libncurses-dev
+      - libgdbm-dev
+      - uuid-dev
+      - tk-dev
+      - libhdf5-dev
+      - libopenblas-dev
+      - libnuma-dev
+      - libsnappy-dev
+      - libjpeg-dev
+      - libpng-dev
+      - libfreetype-dev
+      - libcurl4-openssl-dev
+
+# Debian and Ubuntu rename these binaries to avoid name clashes; the dotfiles expect the upstream names.
+- name: Link fd and bat to their upstream names
+  ansible.builtin.file:
+    src: "/usr/bin/{{ item.src }}"
+    dest: "/usr/local/bin/{{ item.dest }}"
+    state: link
+  loop:
+    - { src: fdfind, dest: fd }
+    - { src: batcat, dest: bat }
+
+- name: Enable the en_US.UTF-8 locale
+  ansible.builtin.lineinfile:
+    path: /etc/locale.gen
+    regexp: '^# ?en_US.UTF-8'
+    line: en_US.UTF-8 UTF-8
+  notify: Generate locales
+
+- name: Create apt keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"

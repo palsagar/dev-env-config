@@ -1,0 +1,57 @@
+- name: Check installed uv version
+  ansible.builtin.command: "{{ dev_home }}/.local/bin/uv --version"
+  register: uv_installed
+  changed_when: false
+  failed_when: false
+
+- name: Install uv {{ uv_version }}
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -LsSf https://astral.sh/uv/{{ uv_version }}/install.sh | env UV_NO_MODIFY_PATH=1 sh
+  args:
+    executable: /bin/bash
+  when: uv_version not in uv_installed.stdout | default('')
+  changed_when: true
+
+- name: Install the Hugging Face CLI (hf)
+  ansible.builtin.command: "{{ dev_home }}/.local/bin/uv tool install huggingface_hub"
+  args:
+    creates: "{{ dev_home }}/.local/bin/hf"
+
+- name: Install ipdb
+  ansible.builtin.command: "{{ dev_home }}/.local/bin/uv tool install ipdb"
+  args:
+    creates: "{{ dev_home }}/.local/bin/ipdb3"
+
+# The ipdb wheel only ships an ipdb3 command.
+- name: Expose ipdb3 as ipdb
+  ansible.builtin.file:
+    src: "{{ dev_home }}/.local/bin/ipdb3"
+    dest: "{{ dev_home }}/.local/bin/ipdb"
+    state: link
+
+- name: Install Claude Code
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -fsSL https://claude.ai/install.sh | bash
+  args:
+    executable: /bin/bash
+    creates: "{{ dev_home }}/.local/bin/claude"
+
+- name: Create ~/.claude
+  ansible.builtin.file:
+    path: "{{ dev_home }}/.claude"
+    state: directory
+    mode: "0700"
+
+- name: Install global CLAUDE.md
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/dotfiles/claude/CLAUDE.md"
+    dest: "{{ dev_home }}/.claude/CLAUDE.md"
+    mode: "0644"
+
+- name: Write ~/.gitconfig
+  ansible.builtin.template:
+    src: gitconfig.j2
+    dest: "{{ dev_home }}/.gitconfig"
+    mode: "0644"

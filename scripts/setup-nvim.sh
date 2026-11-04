@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install the system tools that the Neovim config in nvim/ needs on macOS.
+# Install the system tools that the Neovim config in dotfiles/nvim/ needs on macOS.
 # Mason installs the language servers and formatters itself on the first nvim launch;
 # this script covers the tools Mason depends on and the ones it cannot install.
 # Safe to re-run: every tool that is already on PATH is skipped.
@@ -53,4 +53,4 @@ else
 fi
 
 echo
-echo "Done. Next: copy nvim/ to ~/.config/nvim and start nvim (see README.md)."
+echo "Done. Next: copy dotfiles/nvim/ to ~/.config/nvim and start nvim (see README.md)."

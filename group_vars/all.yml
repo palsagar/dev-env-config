@@ -1,0 +1,36 @@
+# ---- Pinned versions (bump here) -----------------------------------------
+# Tools downloaded from GitHub releases need an exact version in the URL.
+neovim_version: "0.12.5"
+lazygit_version: "0.66.2"
+fzf_version: "0.74.5"
+yazi_version: "26.9.1"
+tree_sitter_version: "0.27.1"
+uv_version: "0.13.4"
+node_major: 22
+docker_major: 29
+kubernetes_minor: "1.37"
+
+# ---- Optional data disk ----------------------------------------------------
+# Set to a block device (e.g. /dev/disk/by-id/google-data) to format it once as
+# ext4, mount it at /data, and move the Docker data root, HF_HOME and the uv
+# cache there. Empty means "boot disk only".
+data_disk_device: ""
+data_disk_mount: /data
+
+# ---- Optional package groups (off by default) ------------------------------
+extras_texlive: false # texlive + pandoc, several GB
+extras_emacs: false
+extras_apptainer: false
+extras_kubernetes: false # kubectl + minikube
+extras_postgresql: false # local PostgreSQL server
+gcloud_enabled: false # gcloud CLI + gcsfuse, for GCP hosts
+
+# ---- Personal settings -------------------------------------------------------
+git_user_name: Sagar Pal
+git_user_email: sagar2204pal@gmail.com
+
+# ---- Architecture names used in release asset file names --------------------
+arch_names:
+  x86_64: { lazygit: x86_64, fzf: amd64, nvim: x86_64, yazi: x86_64, tree_sitter: x64, minikube: amd64 }
+  aarch64: { lazygit: arm64, fzf: arm64, nvim: arm64, yazi: aarch64, tree_sitter: arm64, minikube: arm64 }
+arch: "{{ arch_names[ansible_facts['architecture']] }}"

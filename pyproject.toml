@@ -1,0 +1,16 @@
+[project]
+name = "dev-env-config"
+version = "0.1.0"
+description = "Dotfiles and an Ansible playbook for a personal dev environment"
+requires-python = ">=3.12"
+dependencies = [
+    "ansible-core>=2.18,<2.20",
+]
+
+[dependency-groups]
+dev = [
+    "ansible-lint>=25",
+]
+
+[tool.uv]
+package = false
